@@ -2,44 +2,83 @@
 #include <stdio.h>
 
 #include "ant_protocol.h"
+#include "ant_transport.h"
 
 const int ANT_STARTUP_MAX_RETRIES = 8;
 #define ANT_MAX_SERIAL_LENGTH 8
+#define ANT_HEADER_LENGTH 3
+#define ANT_CHECKSUM_LENGTH 1
 
 struct ant_handle {
     uint8_t channel;
     uint8_t debug;
     uint8_t state;
+
+    ant_transport_t *transport;
 };
 
 struct ant_serial_message {
+    uint8_t _sync;
     uint8_t length;
     uint8_t id;
-    uint8_t data[ANT_MAX_SERIAL_LENGTH];
+    uint8_t data[ANT_MAX_SERIAL_LENGTH + ANT_CHECKSUM_LENGTH];
 } __attribute__((__packed__));
 typedef struct ant_serial_message ant_serial_message_t;
 
 struct ant_response_message {
+    uint8_t _sync;
     uint8_t channel;
     uint8_t id;
     uint8_t code;
+    uint8_t _cksum;
 } __attribute__((__packed__));
 typedef struct ant_response_message ant_response_message_t;
 
-int ant_handle_init(ant_handle_t **ant) {
+static uint8_t ant_checksum_message(ant_serial_message_t *msg) {
+    uint8_t cksum = msg->_sync ^ msg->length ^ msg->id;
+    for (int i = 0; i < msg->length; ++i) cksum ^= msg->data[i];
+    return cksum;
+}
+
+static uint8_t ant_checksum_response(ant_response_message_t *msg) {
+    uint8_t cksum = msg->_sync ^ msg->channel ^ msg->id
+                               ^ msg->code ^ msg->_cksum;
+    return cksum;
+}
+
+ant_handle_t* ant_handle_alloc(ant_transport_t *transport) {
+    ant_handle_t *ant;
+    ant_handle_init(&ant, transport);
+    return ant;
+}
+
+int ant_handle_init(ant_handle_t **ant, ant_transport_t *transport) {
     *ant = malloc(sizeof(ant_handle_t));
+    (*ant)->transport = transport;
     return 0;
 }
 
 void ant_handle_free(ant_handle_t *ant) {
-    if (ant != NULL) free(ant);
+    if (ant != NULL) {
+        free(ant);
+    }
 }
 
 static int _ant_send_message(ant_handle_t *ant, ant_serial_message_t *msg) {
+    msg->_sync = ANT_SYNC;
+
+    msg->data[msg->length] = ant_checksum_message(msg);
+
+    ant->transport->send(ant->transport,
+                         ANT_HEADER_LENGTH + msg->length + ANT_CHECKSUM_LENGTH,
+                         msg);
     return 0;
 }
 
 static int _ant_receive_message(ant_handle_t *ant, ant_serial_message_t *msg) {
+    ant->transport->recv(ant->transport,
+                         sizeof(ant_serial_message_t),
+                         msg);
     return 0;
 }
 
@@ -65,6 +104,7 @@ static int _ant_wait_for_startup(ant_handle_t *ant, uint8_t status) {
     // read data
     for (int retry = 0; retry < ANT_STARTUP_MAX_RETRIES; ++retry) {
         _ant_receive_message(ant, &msg);
+        printf("status: %x != %x\n", msg.data[0], status);
         if (msg.id == ANT_STARTUP_MESSAGE && msg.data[0] == status) {
             return 0;
         }

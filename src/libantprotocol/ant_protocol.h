@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#include "ant_transport.h"
+
 /*
  * http://www.thisisant.com/images/Resources/PDF/1204662412_ant_message_protocol_and_usage.pdf
  */
@@ -89,11 +91,16 @@ enum ant_event {
   ANT_SET_CW_TEST_MODE                        = 0x48,
 };
 
+#define ANT_SYNC 0xa4
+#define ANT_SYNC_ALT 0xa5
 
 struct ant_handle;
 typedef struct ant_handle ant_handle_t;
 
-int ant_handle_init(ant_handle_t **ant);
+ant_handle_t* ant_handle_alloc(ant_transport_t *transport);
+int ant_handle_init(ant_handle_t **ant, ant_transport_t *transport);
 void ant_handle_free(ant_handle_t *ant);
+
+int ant_reset(ant_handle_t *ant);
 
 #endif  // ANT_PROTOCOL_H
