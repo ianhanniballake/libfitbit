@@ -121,6 +121,7 @@ class FitBitClient(object):
             # Start the request Chain
             self.form_base_info()
             while url is not None:
+                print url
                 res = urllib2.urlopen(url, urllib.urlencode(self.info_dict)).read()
                 print res
                 r = FitBitResponse(res)

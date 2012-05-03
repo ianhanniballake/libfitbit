@@ -1,11 +1,12 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "ant_protocol.h"
 #include "ant_transport.h"
 
 const int ANT_STARTUP_MAX_RETRIES = 8;
-#define ANT_MAX_SERIAL_LENGTH 8
+#define ANT_MAX_SERIAL_LENGTH 16
 #define ANT_HEADER_LENGTH 3
 #define ANT_CHECKSUM_LENGTH 1
 
@@ -26,23 +27,15 @@ struct ant_serial_message {
 typedef struct ant_serial_message ant_serial_message_t;
 
 struct ant_response_message {
-    uint8_t _sync;
     uint8_t channel;
     uint8_t id;
     uint8_t code;
-    uint8_t _cksum;
 } __attribute__((__packed__));
 typedef struct ant_response_message ant_response_message_t;
 
 static uint8_t ant_checksum_message(ant_serial_message_t *msg) {
     uint8_t cksum = msg->_sync ^ msg->length ^ msg->id;
     for (int i = 0; i < msg->length; ++i) cksum ^= msg->data[i];
-    return cksum;
-}
-
-static uint8_t ant_checksum_response(ant_response_message_t *msg) {
-    uint8_t cksum = msg->_sync ^ msg->channel ^ msg->id
-                               ^ msg->code ^ msg->_cksum;
     return cksum;
 }
 
@@ -76,6 +69,7 @@ static int _ant_send_message(ant_handle_t *ant, ant_serial_message_t *msg) {
 }
 
 static int _ant_receive_message(ant_handle_t *ant, ant_serial_message_t *msg) {
+    /* TODO sync */
     ant->transport->recv(ant->transport,
                          sizeof(ant_serial_message_t),
                          msg);
@@ -139,6 +133,19 @@ static int _ant_send_command_2(ant_handle_t *ant, uint8_t cmd,
     return _ant_wait_for_ok(ant);
 }
 
+static int _ant_send_command_id_custom(ant_handle_t *ant, uint8_t cmd,
+                               uint8_t channel, uint16_t param0,
+                               uint8_t param1, uint8_t param2) {
+    ant_serial_message_t msg = {.length = 5,
+                                .id = cmd,
+                                .data = {channel,
+                                         ((param0 >> 8) & 0x00FF),
+                                         (param0 & 0x00FF),
+                                         param1, param2}};
+    _ant_send_message(ant, &msg);
+    return _ant_wait_for_ok(ant);
+}
+
 int ant_reset(ant_handle_t *ant) {
     ant_serial_message_t msg = {.length = 1,
                                 .id = ANT_RESET_SYSTEM,
@@ -160,32 +167,49 @@ int ant_set_channel_frequency(ant_handle_t *ant, uint8_t freq) {
                              freq);
 }
 
-int ant_set_set_transmit_power(ant_handle_t *ant, uint8_t power) {
+int ant_set_transmit_power(ant_handle_t *ant, uint8_t power) {
     return _ant_send_command_1(ant,
                              ANT_SET_TRANSMIT_POWER,
                              0,
                              power);
 }
 
-int ant_set_set_search_timeout(ant_handle_t *ant, uint8_t timeout) {
+int ant_set_search_timeout(ant_handle_t *ant, uint8_t timeout) {
     return _ant_send_command_1(ant,
                              ANT_SET_CHANNEL_SEARCH_TIMEOUT,
                              ant->channel,
                              timeout);
 }
 
-int ant_set_set_channel_period(ant_handle_t *ant, uint8_t period) {
+int ant_set_network_key(ant_handle_t *ant, uint8_t network,
+                        const char *key) {
+    ant_serial_message_t msg = {.length = 9,
+                                .id = ANT_SET_NETWORK_KEY,
+                                .data = {}};
+    msg.data[0] = network;
+    memcpy(msg.data + 1, key, sizeof(key));
+
+    _ant_send_message(ant, &msg);
+    return _ant_wait_for_ok(ant);
+}
+
+int ant_set_channel_period(ant_handle_t *ant, uint8_t period) {
     return _ant_send_command_1(ant,
                              ANT_SET_CHANNEL_PERIOD,
                              ant->channel,
                              period);
 }
 
-int ant_set_set_channel_id(ant_handle_t *ant, uint8_t id) {
-    return _ant_send_command_1(ant,
+int ant_set_channel_id(ant_handle_t *ant,
+                       uint16_t device_number,
+                       uint8_t device_type,
+                       uint8_t transmission_type) {
+    return _ant_send_command_id_custom(ant,
                              ANT_SET_CHANNEL_ID,
                              ant->channel,
-                             id);
+                             device_number,
+                             device_type,
+                             transmission_type);
 }
 
 int ant_open_channel(ant_handle_t *ant) {
@@ -196,7 +220,38 @@ int ant_close_channel(ant_handle_t *ant) {
     return _ant_send_command_0(ant, ANT_CLOSE_CHANNEL, ant->channel);
 }
 
-int ant_assign_channel(ant_handle_t *ant) {
-    /* XXX */
+int ant_assign_channel(ant_handle_t *ant, uint8_t channel) {
+    ant->channel = channel;
     return _ant_send_command_2(ant, ANT_ASSIGN_CHANNEL, ant->channel, 0, 0);
+}
+
+int ant_receive_acknowledged_reply(ant_handle_t *ant) {
+    ant_serial_message_t msg;
+
+    for (int i = 0; i < 30; ++i) {
+        int res = _ant_receive_message(ant, &msg);
+        if (msg.id == ANT_SEND_ACK_DATA) {
+            ant_response_message_t *response;
+            response = (ant_response_message_t*)msg.data;
+            return response->code;
+        }
+    }
+
+    return -1;
+}
+
+int _ant_check_tx_response(ant_handle_t *ant) {
+    ant_serial_message_t msg;
+
+    /* XXX Not done */
+    for (int i = 0; i < 30; ++i) {
+        int res = _ant_receive_message(ant, &msg);
+        if (msg.id == ANT_CHANNEL_RESPONSE) {
+            ant_response_message_t *response;
+            response = (ant_response_message_t*)msg.data;
+            return response->code;
+        }
+    }
+
+    return -1;
 }

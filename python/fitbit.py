@@ -230,6 +230,7 @@ class FitBit(object):
     def send_tracker_payload(self, payload):
         # The first packet will be the packet id, the length of the
         # payload, and ends with the payload CRC
+        print "sending payload"
         p = [0x00, self.gen_packet_id(), 0x80, len(payload), 0x00, 0x00, 0x00, 0x00, reduce(operator.xor, map(ord, payload))]
         prefix = itertools.cycle([0x20, 0x40, 0x60])
         for i in range(0, len(payload), 8):

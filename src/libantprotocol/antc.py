@@ -20,3 +20,29 @@ class AntC(object):
 
     def reset(self):
         ant_protocol.ant_reset(self.ant)
+
+    def assign_channel(self, channel):
+        ant_protocol.ant_assign_channel(self.ant, channel)
+
+    def set_channel_frequency(self, freq):
+        ant_protocol.ant_set_channel_frequency(self.ant, freq)
+
+    def set_channel_period(self, period):
+        ant_protocol.ant_set_channel_period(self.ant, period)
+
+    def set_transmit_power(self, power):
+        ant_protocol.ant_set_transmit_power(self.ant, power)
+
+    def set_search_timeout(self, timeout):
+        ant_protocol.ant_set_search_timeout(self.ant, timeout)
+
+    def set_network_key(self, network, key):
+        if len(key) != 8:
+            raise ValueError("Key must be 8 bytes long")
+        ant_protocol.ant_set_network_key(self.ant, network, key)
+
+    def set_channel_id(self, device_number, device_type, transmission_type):
+        ant_protocol.ant_set_channel_id(self.ant,
+                                        device_number,
+                                        device_type,
+                                        transmission_type)

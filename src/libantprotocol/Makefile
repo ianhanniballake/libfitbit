@@ -10,6 +10,11 @@ _ant_transport.so: ant_transport_wrap.o ant_transport_fitbit_usb.o
 
 ant_protocol.o: ant_protocol.c ant_protocol.h
 
+ant_protocol.h: ant_transport.h
+
+ant_protocol.i: ant_protocol.h ant_protocol.c
+ant_transport.i: ant_transport.h
+
 ant_protocol_wrap.c: ant_protocol.i
 	swig -python ant_protocol.i
 
