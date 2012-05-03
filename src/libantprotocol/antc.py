@@ -46,3 +46,8 @@ class AntC(object):
                                         device_number,
                                         device_type,
                                         transmission_type)
+
+    def open_channel(self):
+        ant_protocol.ant_open_channel(self.ant)
+
+    def receive(self):

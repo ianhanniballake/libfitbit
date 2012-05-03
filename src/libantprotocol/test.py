@@ -10,5 +10,6 @@ ant.set_channel_frequency(0x2)
 ant.set_transmit_power(0x3)
 ant.set_search_timeout(0xFF)
 ant.set_channel_id(0xFFFF, 1, 1)
+ant.open_channel()
 # open channel
 
