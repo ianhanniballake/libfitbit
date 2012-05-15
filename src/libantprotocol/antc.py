@@ -50,4 +50,12 @@ class AntC(object):
     def open_channel(self):
         ant_protocol.ant_open_channel(self.ant)
 
-    def receive(self):
+    def wait_for_beacon(self):
+        for tries in range(75):
+            if ant_protocol.ant_check_for_beacon(self.ant) == 0: return
+
+    def reset_tracker(self):
+        ant_protocol.ant_reset_tracker(self.ant)
+
+    #def receive(self):
+

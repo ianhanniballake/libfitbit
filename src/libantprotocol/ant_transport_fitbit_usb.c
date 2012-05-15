@@ -145,9 +145,9 @@ int ant_transport_fitbit_usb_init(ant_transport_fitbit_usb_t *fb) {
 int ant_transport_fitbit_usb_send(void* arg, int len, void* buf) {
     ant_transport_fitbit_usb_t *fb = (ant_transport_fitbit_usb_t*)arg;
 
-    printf("sending: ");
+    printf(" sending: ");
     for (int i = 0; i < len; ++i) {
-        printf(" 0x%x", 0x00ff & ((char*)buf)[i]);
+        printf(" 0x%02x", 0x00ff & ((char*)buf)[i]);
     }
     printf("\n");
 
@@ -166,13 +166,17 @@ int ant_transport_fitbit_usb_recv(void* arg, int len, void* buf) {
     int transferred = 0;
     int res = 0;
     res = libusb_bulk_transfer(fb->handle, LIBUSB_ENDPOINT_IN | 0x01, buf, len,
-                               &transferred, 100);
+                               &transferred, 1000);
 
-    printf("received (%d==%d): ", len, res);
-    for (int i = 0; i < transferred; ++i) {
-        printf(" 0x%x", 0x00ff & ((char*)buf)[i]);
+    if (res >= 0) {
+        printf("received: ", len, res);
+        for (int i = 0; i < transferred; ++i) {
+            printf(" 0x%02x", 0x00ff & ((char*)buf)[i]);
+        }
+        printf("\n");
+    } else {
+        printf("receive failed %d\n", res);
     }
-    printf("\n");
 
     if (res < 0) return -1;
     else return transferred;

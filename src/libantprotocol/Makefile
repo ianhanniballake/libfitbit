@@ -1,4 +1,6 @@
-CFLAGS = -W -Wall -Wno-unused-parameter -std=c99 -I/usr/include/python2.6 -fPIC
+CFLAGS = -W -Wall -Wno-unused-parameter \
+	 -std=gnu99 \
+	 -I/usr/include/python2.6 -fPIC
 
 all: _ant_protocol.so _ant_transport.so
 

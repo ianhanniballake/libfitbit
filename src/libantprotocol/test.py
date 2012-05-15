@@ -1,4 +1,5 @@
 import antc
+import time
 
 ant = antc.AntC()
 ant.reset()
@@ -12,4 +13,6 @@ ant.set_search_timeout(0xFF)
 ant.set_channel_id(0xFFFF, 1, 1)
 ant.open_channel()
 # open channel
-
+ant.wait_for_beacon()
+time.sleep(0.5)
+ant.reset_tracker()
