@@ -155,6 +155,7 @@ int ant_transport_fitbit_usb_send(void* arg, int len, void* buf) {
     res = libusb_bulk_transfer(fb->handle, LIBUSB_ENDPOINT_OUT | 0x01, buf, len,
                                &transferred, 0);
 
+    if(transferred != len) printf("xferred %d==%d?\n", transferred, len);
     if (res < 0) return -1;
     else return transferred;
 }

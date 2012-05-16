@@ -153,25 +153,52 @@ static int _ant_receive_message(ant_handle_t *ant, ant_serial_message_t *msg) {
     return -1;
 }
 
-static int _ant_wait_for_response(ant_handle_t *ant, uint8_t status) {
+static int _ant_wait_for_acknowledgement(ant_handle_t *ant, int id) {
     ant_serial_message_t msg;
     ant_response_message_t *response;
 
-    _ant_receive_message(ant, &msg);
+    for (int retry = 0; retry < ANT_STARTUP_MAX_RETRIES; ++retry) {
+        _ant_receive_message(ant, &msg);
 
-    response = (ant_response_message_t*)msg.data;
-    if (response->id == 1 /* Event */) {
-        if (response->code == EVENT_TRANSFER_TX_COMPLETE) return 0;
+        response = (ant_response_message_t*)msg.data;
+        
+        if (msg.id == ANT_SEND_ACK_DATA && response->id == id) {
+            return 0;
+        }
     }
-
-    if (response->id == ANT_CHANNEL_RESPONSE
-        && response->code == status) return 0;
-
-    else return -1;
+    return -1;
 }
 
-static int _ant_wait_for_ok(ant_handle_t *ant) {
-    return _ant_wait_for_response(ant, RESPONSE_NO_ERROR);
+static int _ant_wait_for_response(ant_handle_t *ant,
+                                  uint8_t id, uint8_t status) {
+    ant_serial_message_t msg;
+    ant_response_message_t *response;
+
+    for (int retry = 0; retry < ANT_STARTUP_MAX_RETRIES; ++retry) {
+        _ant_receive_message(ant, &msg);
+
+        response = (ant_response_message_t*)msg.data;
+        
+        if (response->id == 1 && 
+                (response->code != 0 && response->code != EVENT_TX)) {
+            return -1;
+        }
+
+        if (response->id == id) {
+           if (response->code == status) {
+               return 0;
+           } else {
+               return response->code;
+           }
+        }
+    }
+
+    return -1;
+}
+
+static int _ant_wait_for_ok(ant_handle_t *ant, int id) {
+    printf("w4_ok %x\n", id);
+    return _ant_wait_for_response(ant, id, RESPONSE_NO_ERROR);
 }
 
 static int _ant_wait_for_startup(ant_handle_t *ant, uint8_t status) {
@@ -179,7 +206,6 @@ static int _ant_wait_for_startup(ant_handle_t *ant, uint8_t status) {
     // read data
     for (int retry = 0; retry < ANT_STARTUP_MAX_RETRIES; ++retry) {
         _ant_receive_message(ant, &msg);
-        printf("status: %x != %x\n", msg.data[0], status);
         if (msg.id == ANT_STARTUP_MESSAGE && msg.data[0] == status) {
             return 0;
         }
@@ -192,7 +218,7 @@ static int _ant_send_command_0(ant_handle_t *ant, uint8_t cmd, uint8_t channel) 
                                 .id = cmd,
                                 .data = {channel}};
     _ant_send_message(ant, &msg);
-    return _ant_wait_for_ok(ant);
+    return _ant_wait_for_ok(ant, cmd);
 }
 
 static int _ant_send_command_1(ant_handle_t *ant, uint8_t cmd,
@@ -201,7 +227,7 @@ static int _ant_send_command_1(ant_handle_t *ant, uint8_t cmd,
                                 .id = cmd,
                                 .data = {channel, param0}};
     _ant_send_message(ant, &msg);
-    return _ant_wait_for_ok(ant);
+    return _ant_wait_for_ok(ant, cmd);
 }
 
 static int _ant_send_command_2(ant_handle_t *ant, uint8_t cmd,
@@ -211,7 +237,7 @@ static int _ant_send_command_2(ant_handle_t *ant, uint8_t cmd,
                                 .id = cmd,
                                 .data = {channel, param0, param1}};
     _ant_send_message(ant, &msg);
-    return _ant_wait_for_ok(ant);
+    return _ant_wait_for_ok(ant, cmd);
 }
 
 static int _ant_send_command_id_custom(ant_handle_t *ant, uint8_t cmd,
@@ -224,7 +250,7 @@ static int _ant_send_command_id_custom(ant_handle_t *ant, uint8_t cmd,
                                          (param0 & 0x00FF),
                                          param1, param2}};
     _ant_send_message(ant, &msg);
-    return _ant_wait_for_ok(ant);
+    return _ant_wait_for_ok(ant, cmd);
 }
 
 int _ant_send_acknowledged_data_extra(ant_handle_t *ant,
@@ -246,9 +272,10 @@ int _ant_send_acknowledged_data_extra(ant_handle_t *ant,
 
     for (int retry = 0; res != 0 && retry < 8; ++retry) {
         _ant_send_message(ant, &msg);
-        for (int wait_retry = 0; wait_retry < 2; ++wait_retry) {
+        if (_ant_check_tx_response(ant, ANT_SEND_ACK_DATA) == 5) {
+            return 0;
+        } else {
             usleep(100000);
-            res = _ant_wait_for_ok(ant);
         }
     }
 
@@ -268,10 +295,7 @@ int ant_reset(ant_handle_t *ant) {
 
     int status = _ant_send_message(ant, &msg);
     if (status < 0) return status;
-    // sleep
     _ant_wait_for_startup(ant, 0x20);
-    // return
-    //
     return 0;
 }
 
@@ -305,7 +329,7 @@ int ant_set_network_key(ant_handle_t *ant, uint8_t network,
     memcpy(msg.data + 1, key, ANT_NETWORK_KEY_LENGTH);
 
     _ant_send_message(ant, &msg);
-    return _ant_wait_for_ok(ant);
+    return _ant_wait_for_ok(ant, ANT_SET_NETWORK_KEY);
 }
 
 int ant_set_channel_period(ant_handle_t *ant, uint16_t period) {
@@ -379,7 +403,7 @@ int ant_send_burst_data(ant_handle_t *ant,
                         const uint8_t *data,
                         int data_len,
                         uint8_t msg_id,
-                        float sleep_ms) {
+                        long sleep_us) {
     for (int retry = 0; retry < 2; ++retry) {
         ant_serial_message_t msg;
         msg.id = ANT_SEND_BURST_TRANSFER_PACKET;
@@ -393,7 +417,7 @@ int ant_send_burst_data(ant_handle_t *ant,
         burst->sequence = 0;
 
         uint8_t checksum = 0;
-        for (int i = 0; i < data_len; ++i) checksum ^= data[i];
+        for (int i = 0; i < data_len; ++i) checksum = checksum ^ data[i];
 
         memset(burst->burst_data, 0, msg.length - 1);
         burst->burst_data[0] = msg_id;
@@ -403,28 +427,28 @@ int ant_send_burst_data(ant_handle_t *ant,
 
         _ant_send_message(ant, &msg);
 
+        if (!_ant_check_tx_response(ant, ANT_SEND_BURST_TRANSFER_PACKET) == 0xa) {
+            continue;
+        }
+
         int sequence = 0;
-        for (int i = 0; i < data_len; i += 8) {
+        for (int i = 0; i < data_len; i += 8, ++sequence) {
             int len = (i + 8 < data_len ? 8 : data_len - i - 1);
             if (len < 8) {
                 memset(burst->burst_data, 0, msg.length - 1);
             }
 
-            burst->sequence = ((++sequence) % 3) + 1;
+            burst->sequence = (sequence % 3) + 1;
             if (len < 8) burst->sequence |= 0x4;
 
             memcpy(burst->burst_data, data + i, len);
 
             _ant_send_message(ant, &msg);
-            //int res = _ant_wait_for_ok(ant);
 
-            if (sleep_ms > 0) {
-                unsigned int usec = sleep_ms * 1000;
-                usleep(usec);
-            }
+            if (sleep_us > 0) usleep(sleep_us);
         }
 
-        if (_ant_check_tx_response(ant) == 5) {
+        if (_ant_check_tx_response(ant, ANT_SEND_BURST_TRANSFER_PACKET) == 5) {
             return 0;
         } else {
             continue;
@@ -507,7 +531,8 @@ int _ant_check_burst_response(ant_handle_t *ant,
 }
 
 
-int _ant_check_tx_response(ant_handle_t *ant) {
+int _ant_check_tx_response(ant_handle_t *ant, int id) {
+    printf("check_tx_response\n");
     ant_serial_message_t msg;
 
     for (int retry = 0; retry < 30; ++retry) {
@@ -517,7 +542,7 @@ int _ant_check_tx_response(ant_handle_t *ant) {
         if (msg.id == ANT_CHANNEL_RESPONSE) {
             ant_response_message_t *response;
             response = (ant_response_message_t*)msg.data;
-            return response->code;
+            if (1 == response->id || response->id == id) return response->code;
         }
     }
 
@@ -562,31 +587,52 @@ int tracker_run_opcode(ant_handle_t *ant,
         ant_response_message_t *response;
         response = (ant_response_message_t*)msg.data;
 
+        printf("!response code: %x\n", response->code);
+
+        for (int sub_retry = 0; sub_retry < 2; ++sub_retry) {
+            if (res >= 0 && response->id < packet_id) {
+                res = ant_receive_acknowledged_reply_result(ant, &msg);
+                response = (ant_response_message_t*)msg.data;
+
+                if (response->id == packet_id) break;
+            }
+        }
+
         /* XXX check res */
-        if (res < 0 || response->id != packet_id) {
+        if (res < 0) {
+            printf("bad result: %d\n", res);
+            continue;
+        }
+        if (response->id != packet_id) {
             printf("packet_id mismatch %x != %x\n",
                    response->id, packet_id);
             continue;
         }
+
+        printf("response code: %x\n", response->code);
         /* Need to code up tracker responses ? */
         if (response->code == 0x42) {
             return tracker_get_data_bank(ant, data, data_len);
         } else if (response->code == 0x61) {
+            /* Send payload data to device */
             if (payload_len) {
-                tracker_send_payload(ant, payload, payload_len);
+                res = tracker_send_payload(ant, payload, payload_len);
 
                 *data = realloc(*data, msg.length - 1);
                 *data_len = msg.length - 1;
                 memcpy(*data, msg.data + 1, *data_len);
-                return 0;
+                return res;
+            } else {
+                return -1;
             }
-            return -1;
-            /* Send payload data to device */
         } else if (response->code == 0x41) {
             *data = realloc(*data, msg.length - 1);
             *data_len = msg.length - 1;
             memcpy(*data, msg.data + 1, *data_len);
             return 0;
+        } else {
+            printf("bad response code: %d\n", response->code);
+            return -1;
         }
     }
 
@@ -715,9 +761,8 @@ int tracker_get_burst(ant_handle_t *ant, uint8_t** data, int* data_len) {
 
 int tracker_send_payload(ant_handle_t *ant,
                          const uint8_t* payload, int payload_len) {
-    printf("sending payload %d\n", payload_len);
     return ant_send_burst_data(ant,
                                payload, payload_len,
-                               next_tracker_packet_id(ant), 0.01);
+                               next_tracker_packet_id(ant), 10000);
 
 }

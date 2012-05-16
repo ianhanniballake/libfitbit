@@ -29,7 +29,7 @@ class AntC(object):
         if channel is None: self.channel = 0
         else: self.channel = channel
 
-        if period is None: self.period = 0x20
+        if period is None: self.period = 0x40
         else: self.period = period
 
         if frequency is None: self.frequency = 0x2
@@ -68,15 +68,17 @@ class AntC(object):
 
         self.init_channel(target_channel)
         self.wait_for_beacon()
+        print "ping"
         self.ping_tracker()
+        print "pong"
 
-        #ant_protocol.tracker_get_info(self.ant)
+        ant_protocol.tracker_get_info(self.ant)
 
 
     def init_tracker_for_transfer(self):
         self.reset()
-
         self.init_channel()
+        print "waiting for beacon"
         self.wait_for_beacon()
         self.initiate_hop()
 
@@ -91,7 +93,10 @@ class AntC(object):
                                                   opcode,
                                                   payload)
 
-        if type(res) is int: return []
+        if type(res) is int:
+            raise Exception("execution failed " + str(res))
+        elif res[0] != 0:
+            raise Exception("execution failed " + str(res))
         else: return [ord(c) for c in list(res[1])]
 
 
