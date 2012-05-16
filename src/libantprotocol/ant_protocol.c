@@ -402,8 +402,7 @@ int ant_receive_acknowledged_reply(ant_handle_t *ant) {
 int ant_send_burst_data(ant_handle_t *ant,
                         const uint8_t *data,
                         int data_len,
-                        uint8_t msg_id,
-                        long sleep_us) {
+                        uint8_t msg_id) {
     for (int retry = 0; retry < 2; ++retry) {
         ant_serial_message_t msg;
         msg.id = ANT_SEND_BURST_TRANSFER_PACKET;
@@ -427,7 +426,8 @@ int ant_send_burst_data(ant_handle_t *ant,
 
         _ant_send_message(ant, &msg);
 
-        if (!_ant_check_tx_response(ant, ANT_SEND_BURST_TRANSFER_PACKET) == 0xa) {
+        if (_ant_check_tx_response(ant,
+                                    ANT_SEND_BURST_TRANSFER_PACKET) != 0xa) {
             continue;
         }
 
@@ -445,7 +445,7 @@ int ant_send_burst_data(ant_handle_t *ant,
 
             _ant_send_message(ant, &msg);
 
-            if (sleep_us > 0) usleep(sleep_us);
+            usleep(10000);
         }
 
         if (_ant_check_tx_response(ant, ANT_SEND_BURST_TRANSFER_PACKET) == 5) {
@@ -616,12 +616,8 @@ int tracker_run_opcode(ant_handle_t *ant,
         } else if (response->code == 0x61) {
             /* Send payload data to device */
             if (payload_len) {
-                res = tracker_send_payload(ant, payload, payload_len);
-
-                *data = realloc(*data, msg.length - 1);
-                *data_len = msg.length - 1;
-                memcpy(*data, msg.data + 1, *data_len);
-                return res;
+                return tracker_send_payload(ant, payload, payload_len,
+                                           data, data_len);
             } else {
                 return -1;
             }
@@ -760,9 +756,13 @@ int tracker_get_burst(ant_handle_t *ant, uint8_t** data, int* data_len) {
 }
 
 int tracker_send_payload(ant_handle_t *ant,
-                         const uint8_t* payload, int payload_len) {
-    return ant_send_burst_data(ant,
+                         const uint8_t* payload, int payload_len,
+                         uint8_t** data, int* data_len) {
+    int res = ant_send_burst_data(ant,
                                payload, payload_len,
-                               next_tracker_packet_id(ant), 10000);
+                               next_tracker_packet_id(ant));
+    if (res < 0) return res;
 
+    res = _ant_check_burst_response(ant, data, data_len);
+    return res;
 }

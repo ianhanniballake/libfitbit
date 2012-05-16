@@ -137,7 +137,8 @@ int tracker_run_opcode(ant_handle_t *ant,
                        const uint8_t* payload, int payload_len,
                        uint8_t** data, int* data_len);
 int tracker_get_info(ant_handle_t *ant);
-int tracker_send_payload(ant_handle_t *ant,
-                         const uint8_t* payload, int payload_len);
 
+int tracker_send_payload(ant_handle_t *ant,
+                         const uint8_t* payload, int payload_len,
+                         uint8_t** data, int* data_len);
 #endif  // ANT_PROTOCOL_H
