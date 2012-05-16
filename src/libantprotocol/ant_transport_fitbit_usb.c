@@ -31,7 +31,6 @@ ant_transport_fitbit_usb_t* ant_transport_fitbit_usb_alloc(uint16_t vid,
 
             if (libusb_get_device_descriptor(device, &desc) == 0) {
                 if (desc.idVendor == 0x10c4 && desc.idProduct == 0x84c4) {
-                    printf("found!\n");
                     printf("numconfig %d\n", desc.bNumConfigurations);
                     found = device;
                     break;
@@ -163,13 +162,14 @@ int ant_transport_fitbit_usb_send(void* arg, int len, void* buf) {
 int ant_transport_fitbit_usb_recv(void* arg, int len, void* buf) {
     ant_transport_fitbit_usb_t *fb = (ant_transport_fitbit_usb_t*)arg;
 
+
     int transferred = 0;
     int res = 0;
     res = libusb_bulk_transfer(fb->handle, LIBUSB_ENDPOINT_IN | 0x01, buf, len,
                                &transferred, 1000);
 
     if (res >= 0) {
-        printf("received: ", len, res);
+        printf("received: ");
         for (int i = 0; i < transferred; ++i) {
             printf(" 0x%02x", 0x00ff & ((char*)buf)[i]);
         }

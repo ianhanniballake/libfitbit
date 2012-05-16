@@ -19,8 +19,6 @@ void ant_transport_fitbit_usb_free(ant_transport_fitbit_usb_t *fb);
 
 int ant_transport_fitbit_usb_init(ant_transport_fitbit_usb_t *fb);
 
-int ant_transport_fitbit_usb_init(ant_transport_fitbit_usb_t *fb);
-
 int ant_transport_fitbit_usb_send(void* arg, int len, void* buf);
 int ant_transport_fitbit_usb_recv(void* arg, int len, void* buf);
 

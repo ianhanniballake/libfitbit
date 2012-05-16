@@ -9,7 +9,7 @@
 
 const int ANT_STARTUP_MAX_RETRIES = 8;
 const int ANT_NETWORK_KEY_LENGTH = 8;
-#define ANT_MAX_SERIAL_LENGTH 16
+#define ANT_MAX_SERIAL_LENGTH 64
 #define ANT_HEADER_LENGTH 3
 #define ANT_CHECKSUM_LENGTH 1
 #define ANT_CHANNEL_LENGTH 1
@@ -18,6 +18,15 @@ struct ant_handle {
     uint8_t channel;
     uint8_t debug;
     uint8_t state;
+
+
+    /* For pulling packets off intact */
+    uint8_t buffer[4096];
+    uint16_t buffer_len;
+
+    /* TODO move to tracker handle */
+    uint8_t packet_id;
+    uint8_t current_bank_id;
 
     ant_transport_t *transport;
 };
@@ -38,13 +47,16 @@ struct ant_response_message {
 typedef struct ant_response_message ant_response_message_t;
 
 struct ant_burst_message {
-    uint8_t sequence: 3;
     uint8_t channel:  5;
+    uint8_t sequence: 3;
     uint8_t burst_data[ANT_MAX_SERIAL_LENGTH];
 } __attribute__((__packed__));
 typedef struct ant_burst_message ant_burst_message_t;
 
 static int burst_data_length(ant_serial_message_t *msg) {
+    /* In theory this is msg->length - offsetof..., but the length field
+     * is being abused by the tracker?
+     */
     return msg->length - offsetof(ant_burst_message_t, burst_data);
 }
 
@@ -63,6 +75,9 @@ ant_handle_t* ant_handle_alloc(ant_transport_t *transport) {
 int ant_handle_init(ant_handle_t **ant, ant_transport_t *transport) {
     *ant = malloc(sizeof(ant_handle_t));
     (*ant)->transport = transport;
+    (*ant)->packet_id = 0;
+    (*ant)->buffer_len = 0;
+    (*ant)->current_bank_id = 0;
     return 0;
 }
 
@@ -85,11 +100,57 @@ static int _ant_send_message(ant_handle_t *ant, ant_serial_message_t *msg) {
 }
 
 static int _ant_receive_message(ant_handle_t *ant, ant_serial_message_t *msg) {
-    /* TODO sync */
-    ant->transport->recv(ant->transport,
-                         sizeof(ant_serial_message_t),
-                         msg);
-    return 0;
+    const int min_buffer_len = 4;
+
+    int retries = 0;
+
+    for (int retries = 0; retries < 10; ++retries) {
+        if (ant->buffer_len < min_buffer_len) {
+            int transferred = ant->transport->recv(
+                                       ant->transport,
+                                       sizeof(ant->buffer) - ant->buffer_len,
+                                       ant->buffer);
+            if (transferred > 0) {
+                ant->buffer_len += transferred;
+            }
+            continue;
+        }
+
+        int offset;
+        for (offset = 0; offset < ant->buffer_len; ++offset) {
+            if (ant->buffer[offset] == ANT_SYNC ||
+                ant->buffer[offset] == ANT_SYNC_ALT) break;
+        }
+        if (offset > 0) {
+            memmove(ant->buffer,
+                    ant->buffer + offset,
+                    ant->buffer_len - offset);
+            ant->buffer_len -= offset;
+            continue;
+        }
+
+        ant_serial_message_t *plausible = (ant_serial_message_t*)ant->buffer;
+        int plausible_len = plausible->length \
+                                + ANT_HEADER_LENGTH \
+                                + ANT_CHECKSUM_LENGTH;
+
+        if (plausible_len <= ant->buffer_len) {
+            uint8_t cksum = plausible->data[plausible->length];
+            uint8_t cksum_compute = ant_checksum_message(plausible);
+
+            if (cksum == cksum_compute) {
+                memcpy(msg, ant->buffer, plausible_len);
+            }
+
+            ant->buffer_len -= plausible_len;
+            memmove(ant->buffer, ant->buffer + plausible_len, ant->buffer_len);
+
+            if (cksum == cksum_compute) {
+                return plausible_len;
+            }
+        }
+    }
+    return -1;
 }
 
 static int _ant_wait_for_response(ant_handle_t *ant, uint8_t status) {
@@ -99,9 +160,13 @@ static int _ant_wait_for_response(ant_handle_t *ant, uint8_t status) {
     _ant_receive_message(ant, &msg);
 
     response = (ant_response_message_t*)msg.data;
+    if (response->id == 1 /* Event */) {
+        if (response->code == EVENT_TRANSFER_TX_COMPLETE) return 0;
+    }
 
     if (response->id == ANT_CHANNEL_RESPONSE
         && response->code == status) return 0;
+
     else return -1;
 }
 
@@ -160,6 +225,40 @@ static int _ant_send_command_id_custom(ant_handle_t *ant, uint8_t cmd,
                                          param1, param2}};
     _ant_send_message(ant, &msg);
     return _ant_wait_for_ok(ant);
+}
+
+int _ant_send_acknowledged_data_extra(ant_handle_t *ant,
+                                      const uint8_t *data,
+                                      int data_len,
+                                      const uint8_t *extra,
+                                      int extra_len) {
+
+    /* TODO Bounds Check */
+    int res = -1;
+
+    ant_serial_message_t msg;
+
+    msg.id = ANT_SEND_ACK_DATA;
+    msg.length = extra_len + data_len + ANT_CHANNEL_LENGTH;
+    msg.data[0] = ant->channel;
+    if (extra_len) memcpy(msg.data + 1, extra, extra_len);
+    memcpy(msg.data + 1 + extra_len, data, data_len);
+
+    for (int retry = 0; res != 0 && retry < 8; ++retry) {
+        _ant_send_message(ant, &msg);
+        for (int wait_retry = 0; wait_retry < 2; ++wait_retry) {
+            usleep(100000);
+            res = _ant_wait_for_ok(ant);
+        }
+    }
+
+    return res;
+}
+
+int ant_send_acknowledged_data(ant_handle_t *ant,
+                               const uint8_t *data,
+                               int data_len) {
+    return _ant_send_acknowledged_data_extra(ant, data, data_len, NULL, 0);
 }
 
 int ant_reset(ant_handle_t *ant) {
@@ -245,7 +344,7 @@ int ant_check_for_beacon(ant_handle_t *ant) {
     ant_serial_message_t msg;
     int res = _ant_receive_message(ant, &msg);
 
-    if (res == 0 && msg.id == ANT_SEND_BROADCAST_DATA) return 0;
+    if (res >= 0 && msg.id == ANT_SEND_BROADCAST_DATA) return 0;
     else return -1;
 }
 
@@ -256,24 +355,13 @@ int ant_wait_for_beacon(ant_handle_t *ant, uint8_t retries) {
     return -1;
 }
 
-int ant_reset_tracker(ant_handle_t *ant) {
-    uint8_t reset_data[] = { 0x78, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-    return ant_send_acknowledged_data(ant, reset_data, sizeof(reset_data));
-}
-
-int ant_ping_tracker(ant_handle_t *ant) {
-    uint8_t reset_data[] = { 0x78, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-    return ant_send_acknowledged_data(ant, reset_data, sizeof(reset_data));
-}
-
-int ant_receive_acknowledged_reply(ant_handle_t *ant) {
-    ant_serial_message_t msg;
-
-    for (int i = 0; i < 30; ++i) {
-        int res = _ant_receive_message(ant, &msg);
-        if (msg.id == ANT_SEND_ACK_DATA) {
+int ant_receive_acknowledged_reply_result(ant_handle_t *ant,
+                                          ant_serial_message_t *msg) {
+    for (int i = 0; i < 64; ++i) {
+        int res = _ant_receive_message(ant, msg);
+        if (msg->id == ANT_SEND_ACK_DATA) {
             ant_response_message_t *response;
-            response = (ant_response_message_t*)msg.data;
+            response = (ant_response_message_t*)msg->data;
             return response->code;
         }
     }
@@ -281,24 +369,51 @@ int ant_receive_acknowledged_reply(ant_handle_t *ant) {
     return -1;
 }
 
-int ant_send_burst_data(ant_handle_t *ant,
-                        uint8_t *data,
-                        int data_len,
-                        float sleep_ms) {
+int ant_receive_acknowledged_reply(ant_handle_t *ant) {
     ant_serial_message_t msg;
-    msg.id = ANT_SEND_BURST_TRANSFER_PACKET;
-    msg.data[0] = ant->channel;
 
-    /* Burst data and ids currently handled at higher layer */
-    /* TODO Move lower in stack */
+    return ant_receive_acknowledged_reply_result(ant, &msg);
+}
 
-
+int ant_send_burst_data(ant_handle_t *ant,
+                        const uint8_t *data,
+                        int data_len,
+                        uint8_t msg_id,
+                        float sleep_ms) {
     for (int retry = 0; retry < 2; ++retry) {
-        for (int i = 0; i < data_len; i += 9) {
-            int end = (i + 9 < data_len - 1 ? i + 9 : data_len - 1);
-            memcpy(msg.data + 1, data + i + 1, end - i);
-            msg.length = end - i + ANT_CHANNEL_LENGTH;
-            printf("copy %d\n", end - i);
+        ant_serial_message_t msg;
+        msg.id = ANT_SEND_BURST_TRANSFER_PACKET;
+        msg.length = 9;
+
+        ant_burst_message_t *burst = (ant_burst_message_t*)msg.data;
+
+        burst->channel = ant->channel;
+
+        /* Initial packet */
+        burst->sequence = 0;
+
+        uint8_t checksum = 0;
+        for (int i = 0; i < data_len; ++i) checksum ^= data[i];
+
+        memset(burst->burst_data, 0, msg.length - 1);
+        burst->burst_data[0] = msg_id;
+        burst->burst_data[1] = 0x80;
+        burst->burst_data[2] = data_len;
+        burst->burst_data[7] = checksum;
+
+        _ant_send_message(ant, &msg);
+
+        int sequence = 0;
+        for (int i = 0; i < data_len; i += 8) {
+            int len = (i + 8 < data_len ? 8 : data_len - i - 1);
+            if (len < 8) {
+                memset(burst->burst_data, 0, msg.length - 1);
+            }
+
+            burst->sequence = ((++sequence) % 3) + 1;
+            if (len < 8) burst->sequence |= 0x4;
+
+            memcpy(burst->burst_data, data + i, len);
 
             _ant_send_message(ant, &msg);
             //int res = _ant_wait_for_ok(ant);
@@ -308,8 +423,13 @@ int ant_send_burst_data(ant_handle_t *ant,
                 usleep(usec);
             }
         }
-    }
 
+        if (_ant_check_tx_response(ant) == 5) {
+            return 0;
+        } else {
+            continue;
+        }
+    }
     return -1;
 }
 
@@ -324,13 +444,14 @@ int _ant_check_burst_response(ant_handle_t *ant,
     int response_available = 512;
 
     if (response == NULL || response_len == NULL) return -1;
-    *response_len = 0;
 
+    *response_len = 0;
     *response = realloc(*response, response_available);
 
     for (int retry = 0; retry < 128; ++retry) {
-        int res = _ant_receive_message(ant, &msg);
-        if (res != 0) continue;
+        printf("ant_check_burst_response %d\n", retry);
+        int transferred = _ant_receive_message(ant, &msg);
+        if (transferred <= 0) continue;
 
         burst = (ant_burst_message_t*)msg.data;
         int burst_len = burst_data_length(&msg);
@@ -349,8 +470,10 @@ int _ant_check_burst_response(ant_handle_t *ant,
                 response_available *= 2;
             }
 
-            memcpy(burst->burst_data, *response + *response_len, burst_len);
+            memcpy(*response + *response_len, burst->burst_data, burst_len);
             *response_len += burst_len;
+            break;
+
         } else if (msg.id == ANT_SEND_BURST_TRANSFER_PACKET) {
             /* Accumulate data */
             if (*response_len + burst_len > response_available) {
@@ -358,10 +481,19 @@ int _ant_check_burst_response(ant_handle_t *ant,
                 response_available *= 2;
             }
 
-            memcpy(burst->burst_data, *response + *response_len, burst_len);
+            memcpy(*response + *response_len, burst->burst_data, burst_len);
             *response_len += burst_len;
+
+            if (burst->sequence & 0x4) break;
         }
     }
+
+    printf("result %d (%d) %p\n", result, *response_len, *response);
+
+    for (int i = 0; i < *response_len; ++i) {
+        printf(" %02x", (*response)[i]);
+    }
+    printf("\n");
 
     if (result < 0) {
         if (*response) {
@@ -374,36 +506,13 @@ int _ant_check_burst_response(ant_handle_t *ant,
     return result;
 }
 
-int ant_send_acknowledged_data(ant_handle_t *ant,
-                               char *data,
-                               int data_len) {
-    /* TODO Bounds Check */
-    int res = -1;
-
-    ant_serial_message_t msg;
-
-    msg.id = ANT_SEND_ACK_DATA;
-    msg.length = data_len + ANT_CHANNEL_LENGTH;
-    msg.data[0] = ant->channel;
-    memcpy(msg.data + 1, data, data_len);
-
-    for (int retry = 0; res != 0 && retry < 8; ++retry) {
-        _ant_send_message(ant, &msg);
-        for (int wait_retry = 0; wait_retry < 2; ++wait_retry) {
-            usleep(100000);
-            res = _ant_wait_for_ok(ant);
-        }
-    }
-
-    return res;
-}
 
 int _ant_check_tx_response(ant_handle_t *ant) {
     ant_serial_message_t msg;
 
     for (int retry = 0; retry < 30; ++retry) {
         int res = _ant_receive_message(ant, &msg);
-        if (res != 0) continue;
+        if (res <= 0) continue;
 
         if (msg.id == ANT_CHANNEL_RESPONSE) {
             ant_response_message_t *response;
@@ -413,4 +522,202 @@ int _ant_check_tx_response(ant_handle_t *ant) {
     }
 
     return -1;
+}
+
+
+int ant_reset_tracker(ant_handle_t *ant) {
+    const uint8_t reset_data[] = { 0x78, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    return ant_send_acknowledged_data(ant, reset_data, sizeof(reset_data));
+}
+
+int ant_send_tracker_hop(ant_handle_t *ant, uint16_t hop) {
+    const uint8_t hop_data[] = { 0x78, 0x02, (hop >> 8), hop & 0Xff,
+                           0x00, 0x00, 0x00, 0x00};
+    return ant_send_acknowledged_data(ant, hop_data, sizeof(hop_data));
+}
+
+
+int ant_ping_tracker(ant_handle_t *ant) {
+    const uint8_t ping_data[] = { 0x78, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    return ant_send_acknowledged_data(ant, ping_data, sizeof(ping_data));
+}
+
+uint8_t next_tracker_packet_id(ant_handle_t *ant) {
+    ant->packet_id = (ant->packet_id + 1) % 8;
+    return ant->packet_id + 0x38;
+}
+
+
+int tracker_run_opcode(ant_handle_t *ant,
+                       const uint8_t* opcode, int opcode_len,
+                       const uint8_t* payload, int payload_len,
+                       uint8_t** data, int* data_len) {
+    ant_serial_message_t msg;
+
+    for (int retry = 0; retry < 4; ++retry) {
+        uint8_t packet_id = next_tracker_packet_id(ant);
+        tracker_send_packet(ant, packet_id, opcode, opcode_len);
+        int res = ant_receive_acknowledged_reply_result(ant, &msg);
+
+        ant_response_message_t *response;
+        response = (ant_response_message_t*)msg.data;
+
+        /* XXX check res */
+        if (res < 0 || response->id != packet_id) {
+            printf("packet_id mismatch %x != %x\n",
+                   response->id, packet_id);
+            continue;
+        }
+        /* Need to code up tracker responses ? */
+        if (response->code == 0x42) {
+            return tracker_get_data_bank(ant, data, data_len);
+        } else if (response->code == 0x61) {
+            if (payload_len) {
+                tracker_send_payload(ant, payload, payload_len);
+
+                *data = realloc(*data, msg.length - 1);
+                *data_len = msg.length - 1;
+                memcpy(*data, msg.data + 1, *data_len);
+                return 0;
+            }
+            return -1;
+            /* Send payload data to device */
+        } else if (response->code == 0x41) {
+            *data = realloc(*data, msg.length - 1);
+            *data_len = msg.length - 1;
+            memcpy(*data, msg.data + 1, *data_len);
+            return 0;
+        }
+    }
+
+    return -1;
+}
+
+int tracker_send_packet(ant_handle_t *ant, uint8_t packet_id,
+                        const uint8_t* data, int data_len) {
+    return _ant_send_acknowledged_data_extra(ant, data, data_len,
+                                             &packet_id, sizeof(packet_id));
+}
+
+int tracker_get_info(ant_handle_t *ant) {
+    uint8_t op[] = {0x24, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    uint8_t *data = NULL;
+    int data_len = 0;
+    int res = tracker_run_opcode(ant,
+                                 op, sizeof(op), NULL, 0, &data, &data_len);
+
+    uint8_t serial[4];
+    memcpy(serial, data, 4);
+
+    uint8_t firmware_version = data[5];
+    uint8_t bsl_major_version = data[6];
+    uint8_t bsl_minor_version = data[7];
+    uint8_t app_major_version = data[8];
+    uint8_t app_minor_version = data[9];
+
+    uint8_t in_mode_bsl = data[10];
+    uint8_t on_charger = data[11];
+
+    printf("info: %d: ", data_len);
+    for (int i = 0; i < data_len; ++i) {
+        printf(" %02x", data[i]);
+    }
+    printf("\n");
+    printf("serial: %02x%02x%02x%02x\nfw: %d\nbsl: %d.%d\napp: %d.%d\nbsl: %d\non charger: %d\n",
+           serial[0], serial[1], serial[2], serial[3],
+           firmware_version,
+           bsl_major_version, bsl_minor_version,
+           app_major_version, app_minor_version,
+           in_mode_bsl,
+           on_charger);
+
+    if (data) free(data);
+    return res;
+}
+
+int tracker_get_data_bank(ant_handle_t *ant, uint8_t** data, int* data_len) {
+    int data_available = 512;
+    uint8_t cmd = 0x70;
+
+    uint8_t *bank = NULL;
+    int bank_len = 0;
+
+    *data = realloc(*data, data_available);
+
+    for (int i = 0;i < 20; ++i) {
+        uint8_t packet_id = next_tracker_packet_id(ant);
+        uint8_t check_cmd[] = {cmd, 0x00, 0x02,
+                               ant->current_bank_id,
+                               0x00, 0x00, 0x00};
+        ++ant->current_bank_id;
+        cmd = 0x60;
+
+        int res = tracker_send_packet(ant, packet_id,
+                                      check_cmd, sizeof(check_cmd));
+        int res2 = tracker_get_burst(ant, &bank, &bank_len);
+
+        printf("g db id:%d cmd:%x b:%p %d d:%p %d\n",
+               ant->current_bank_id,
+               cmd,
+               bank, bank_len,
+               *data, *data_len);
+
+        if (bank_len == 0) {
+            if (bank) {
+                free(bank);
+                bank = NULL;
+            }
+            return 0;
+        }
+
+        while (*data_len + bank_len > data_available) {
+            *data = realloc(*data, data_available * 2);
+            data_available *= 2;
+        }
+        memcpy(*data + *data_len, bank, bank_len);
+        *data_len += bank_len;
+    }
+
+    return -1;
+}
+
+int tracker_get_burst(ant_handle_t *ant, uint8_t** data, int* data_len) {
+    int res = _ant_check_burst_response(ant, data, data_len);
+
+    if (res != 0) return res;
+    else if (*data == NULL) return -1;
+
+    if ((*data)[1] != 0x81) {
+        printf("response is not a tracker burst! got %x %x\n", *data[0], *data[1]);
+        free(*data);
+        *data = NULL;
+        *data_len = 0;
+
+        return -1;
+    }
+
+    int size = (*data)[3] << 8 | (*data)[2];
+
+    if (size == 0) {
+        free(*data);
+        *data = NULL;
+        *data_len = 0;
+        return 0;
+    }
+
+    printf("size: %d\n", size);
+
+    *data_len = size;
+    memmove(*data, *data + 8, size);
+
+    return 0;
+}
+
+int tracker_send_payload(ant_handle_t *ant,
+                         const uint8_t* payload, int payload_len) {
+    printf("sending payload %d\n", payload_len);
+    return ant_send_burst_data(ant,
+                               payload, payload_len,
+                               next_tracker_packet_id(ant), 0.01);
+
 }

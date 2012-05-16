@@ -121,10 +121,23 @@ int ant_wait_for_beacon(ant_handle_t *ant, uint8_t retries);
 
 /* TODO should go in fitbit library */
 int ant_reset_tracker(ant_handle_t *ant);
+int ant_send_tracker_hop(ant_handle_t *ant, uint16_t hop);
 int ant_ping_tracker(ant_handle_t *ant);
 
 int ant_send_acknowledged_data(ant_handle_t *ant,
-                               char *data,
+                               const uint8_t *data,
                                int data_len);
+
+int tracker_send_packet(ant_handle_t *ant, uint8_t packet_id,
+                        const uint8_t* data, int data_len);
+int tracker_get_data_bank(ant_handle_t *ant, uint8_t** data, int* data_len);
+int tracker_get_burst(ant_handle_t *ant, uint8_t** data, int* data_len);
+int tracker_run_opcode(ant_handle_t *ant,
+                       const uint8_t* opcode, int opcode_len,
+                       const uint8_t* payload, int payload_len,
+                       uint8_t** data, int* data_len);
+int tracker_get_info(ant_handle_t *ant);
+int tracker_send_payload(ant_handle_t *ant,
+                         const uint8_t* payload, int payload_len);
 
 #endif  // ANT_PROTOCOL_H
