@@ -1,2 +1,10 @@
 *.pyc
 *.swp
+
+# Android - Exclude all files in the bin and gen folders
+android/antprotocol/bin/
+android/antprotocol/gen/
+android/fitbit/bin/
+android/fitbit/gen/
+android/fitbitsync/bin/
+android/fitbitsync/gen/
