@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-	<string name="hello">Hello World, Fitbit Sync!</string>
 	<string name="app_name">Fitbit Sync</string>
+	<string name="open_connection">Open Connection</string>
+	<string name="init_connection">Initialize Connection</string>
 
 </resources>
