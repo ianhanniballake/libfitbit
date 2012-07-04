@@ -27,6 +27,12 @@ public class FitbitSyncActivity extends Activity
 		public void onReceive(final Context context, final Intent intent)
 		{
 			final String action = intent.getAction();
+			if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action))
+			{
+				final UsbDevice attachedDevice = intent
+						.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+				deviceConnected(attachedDevice);
+			}
 			if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action))
 			{
 				final UsbDevice detachedDevice = intent
@@ -38,10 +44,27 @@ public class FitbitSyncActivity extends Activity
 					EasyTracker.getTracker().trackEvent("device", "disconnect",
 							"", 0L);
 					fitbit = null;
+					final Button openConnection = (Button) findViewById(R.id.open_connection);
+					openConnection.setEnabled(false);
+					final Button initConnection = (Button) findViewById(R.id.init_connection);
+					initConnection.setEnabled(false);
 				}
 			}
 		}
 	};
+
+	private void deviceConnected(final UsbDevice attachedDevice)
+	{
+		final UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);
+		device = attachedDevice;
+		fitbit = new Fitbit(manager, device);
+		final TextView log = (TextView) findViewById(R.id.log);
+		log.setText(log.getText() + "\nFound device " + device.getDeviceName());
+		final Button openConnection = (Button) findViewById(R.id.open_connection);
+		openConnection.setEnabled(true);
+		final Button initConnection = (Button) findViewById(R.id.init_connection);
+		initConnection.setEnabled(true);
+	}
 
 	@Override
 	public void onCreate(final Bundle savedInstanceState)
@@ -62,6 +85,7 @@ public class FitbitSyncActivity extends Activity
 						+ getString(R.string.open_connection) + ": " + success);
 			}
 		});
+		openConnection.setEnabled(false);
 		final Button initConnection = (Button) findViewById(R.id.init_connection);
 		initConnection.setOnClickListener(new OnClickListener()
 		{
@@ -74,15 +98,16 @@ public class FitbitSyncActivity extends Activity
 						+ getString(R.string.init_connection) + ": " + true);
 			}
 		});
-		final UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);
-		device = (UsbDevice) getIntent().getParcelableExtra(
-				UsbManager.EXTRA_DEVICE);
-		fitbit = new Fitbit(manager, device);
-		log.setText("Found device " + device.getDeviceName());
-		// listen for detach device intents
+		initConnection.setEnabled(false);
+		// listen for device intents
 		final IntentFilter filter = new IntentFilter();
+		filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
 		filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
 		registerReceiver(usbReceiver, filter);
+		device = (UsbDevice) getIntent().getParcelableExtra(
+				UsbManager.EXTRA_DEVICE);
+		if (device != null)
+			deviceConnected(device);
 	}
 
 	@Override
