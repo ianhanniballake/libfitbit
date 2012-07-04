@@ -13,6 +13,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.analytics.tracking.android.EasyTracker;
 import com.ianhanniballake.fitbit.Fitbit;
 import com.ianhanniballake.fitbitsync.R;
 
@@ -34,6 +35,8 @@ public class FitbitSyncActivity extends Activity
 				if (device != null && device.equals(deviceName))
 				{
 					fitbit.close();
+					EasyTracker.getTracker().trackEvent("device", "disconnect",
+							"", 0L);
 					fitbit = null;
 				}
 			}
@@ -53,6 +56,8 @@ public class FitbitSyncActivity extends Activity
 			public void onClick(final View v)
 			{
 				final boolean success = fitbit.open();
+				EasyTracker.getTracker().trackEvent("device", "open",
+						Boolean.toString(success), 0L);
 				log.setText(log.getText() + "\n"
 						+ getString(R.string.open_connection) + ": " + success);
 			}
@@ -64,6 +69,7 @@ public class FitbitSyncActivity extends Activity
 			public void onClick(final View v)
 			{
 				fitbit.init();
+				EasyTracker.getTracker().trackEvent("device", "init", "", 0L);
 				log.setText(log.getText() + "\n"
 						+ getString(R.string.init_connection) + ": " + true);
 			}
@@ -77,5 +83,19 @@ public class FitbitSyncActivity extends Activity
 		final IntentFilter filter = new IntentFilter();
 		filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
 		registerReceiver(usbReceiver, filter);
+	}
+
+	@Override
+	protected void onStart()
+	{
+		super.onStart();
+		EasyTracker.getInstance().activityStart(this);
+	}
+
+	@Override
+	protected void onStop()
+	{
+		super.onStop();
+		EasyTracker.getInstance().activityStop(this);
 	}
 }
