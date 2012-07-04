@@ -1,0 +1,99 @@
+com.google.analytics.tracking.android.AdMobInfo$AdMobKey: com.google.analytics.tracking.android.AdMobInfo$AdMobKey[] values()
+com.google.analytics.tracking.android.AdMobInfo$AdMobKey: com.google.analytics.tracking.android.AdMobInfo$AdMobKey valueOf(java.lang.String)
+com.google.analytics.tracking.android.AnalyticsReceiver
+com.google.analytics.tracking.android.AnalyticsReceiver: AnalyticsReceiver()
+com.google.analytics.tracking.android.GAServiceProxy$ConnectState: com.google.analytics.tracking.android.GAServiceProxy$ConnectState[] values()
+com.google.analytics.tracking.android.GAServiceProxy$ConnectState: com.google.analytics.tracking.android.GAServiceProxy$ConnectState valueOf(java.lang.String)
+com.google.android.gms.analytics.internal.Command
+com.google.android.gms.analytics.internal.Command: android.os.Parcelable$Creator CREATOR
+com.ianhaniballake.antprotocol.R$bool: int ga_anonymizeIp
+com.ianhaniballake.antprotocol.R$bool: int ga_autoActivityTracking
+com.ianhaniballake.antprotocol.R$drawable: int ic_launcher
+com.ianhaniballake.antprotocol.R$id: int init_connection
+com.ianhaniballake.antprotocol.R$id: int log
+com.ianhaniballake.antprotocol.R$id: int open_connection
+com.ianhaniballake.antprotocol.R$layout: int main
+com.ianhaniballake.antprotocol.R$string: int app_name
+com.ianhaniballake.antprotocol.R$string: int com_ianhanniballake_fitbitsync_ui_FitbitSyncActivity
+com.ianhaniballake.antprotocol.R$string: int ga_trackingId
+com.ianhaniballake.antprotocol.R$string: int init_connection
+com.ianhaniballake.antprotocol.R$string: int open_connection
+com.ianhaniballake.antprotocol.R$xml: int device_filter
+com.ianhanniballake.fitbit.R$bool: int ga_anonymizeIp
+com.ianhanniballake.fitbit.R$bool: int ga_autoActivityTracking
+com.ianhanniballake.fitbit.R$drawable: int ic_launcher
+com.ianhanniballake.fitbit.R$id: int init_connection
+com.ianhanniballake.fitbit.R$id: int log
+com.ianhanniballake.fitbit.R$id: int open_connection
+com.ianhanniballake.fitbit.R$layout: int main
+com.ianhanniballake.fitbit.R$string: int app_name
+com.ianhanniballake.fitbit.R$string: int com_ianhanniballake_fitbitsync_ui_FitbitSyncActivity
+com.ianhanniballake.fitbit.R$string: int ga_trackingId
+com.ianhanniballake.fitbit.R$string: int init_connection
+com.ianhanniballake.fitbit.R$string: int open_connection
+com.ianhanniballake.fitbit.R$xml: int device_filter
+com.ianhanniballake.fitbitsync.FitbitSyncApplication
+com.ianhanniballake.fitbitsync.FitbitSyncApplication: FitbitSyncApplication()
+com.ianhanniballake.fitbitsync.R$bool: int ga_anonymizeIp
+com.ianhanniballake.fitbitsync.R$bool: int ga_autoActivityTracking
+com.ianhanniballake.fitbitsync.R$drawable: int ic_launcher
+com.ianhanniballake.fitbitsync.R$id: int init_connection
+com.ianhanniballake.fitbitsync.R$id: int log
+com.ianhanniballake.fitbitsync.R$id: int open_connection
+com.ianhanniballake.fitbitsync.R$layout: int main
+com.ianhanniballake.fitbitsync.R$string: int app_name
+com.ianhanniballake.fitbitsync.R$string: int com_ianhanniballake_fitbitsync_ui_FitbitSyncActivity
+com.ianhanniballake.fitbitsync.R$string: int ga_trackingId
+com.ianhanniballake.fitbitsync.R$string: int init_connection
+com.ianhanniballake.fitbitsync.R$string: int open_connection
+com.ianhanniballake.fitbitsync.R$xml: int device_filter
+com.ianhanniballake.fitbitsync.ui.FitbitSyncActivity
+com.ianhanniballake.fitbitsync.ui.FitbitSyncActivity: FitbitSyncActivity()
+org.acra.ACRA
+org.acra.ACRA: boolean DEV_LOGGING
+org.acra.ACRA: java.lang.String LOG_TAG
+org.acra.ACRA: java.lang.String RES_NOTIF_ICON
+org.acra.ACRA: java.lang.String RES_NOTIF_TICKER_TEXT
+org.acra.ACRA: java.lang.String RES_NOTIF_TITLE
+org.acra.ACRA: java.lang.String RES_NOTIF_TEXT
+org.acra.ACRA: java.lang.String RES_DIALOG_ICON
+org.acra.ACRA: java.lang.String RES_DIALOG_TITLE
+org.acra.ACRA: java.lang.String RES_DIALOG_TEXT
+org.acra.ACRA: java.lang.String RES_DIALOG_COMMENT_PROMPT
+org.acra.ACRA: java.lang.String RES_DIALOG_OK_TOAST
+org.acra.ACRA: java.lang.String RES_TOAST_TEXT
+org.acra.ACRA: int NOTIF_CRASH_ID
+org.acra.ACRA: java.lang.String PREF_DISABLE_ACRA
+org.acra.ACRA: java.lang.String PREF_ENABLE_ACRA
+org.acra.ACRA: java.lang.String PREF_ENABLE_SYSTEM_LOGS
+org.acra.ACRA: java.lang.String PREF_ENABLE_DEVICE_ID
+org.acra.ACRA: java.lang.String PREF_USER_EMAIL_ADDRESS
+org.acra.ACRA: java.lang.String PREF_ALWAYS_ACCEPT
+org.acra.ACRA: android.app.Application mApplication
+org.acra.ACRA: org.acra.annotation.ReportsCrashes mReportsCrashes
+org.acra.ACRA: android.content.SharedPreferences$OnSharedPreferenceChangeListener mPrefListener
+org.acra.ACRA: android.text.format.Time mAppStartDate
+org.acra.ACRA: org.acra.ReportField[] DEFAULT_MAIL_REPORT_FIELDS
+org.acra.ACRA: org.acra.ReportField[] DEFAULT_REPORT_FIELDS
+org.acra.ACRA: java.lang.String NULL_VALUE
+org.acra.ACRA: ACRA()
+org.acra.ACRA: void init(android.app.Application)
+org.acra.ACRA: void initAcra()
+org.acra.ACRA: void checkCrashResources()
+org.acra.ACRA: android.content.SharedPreferences getACRASharedPreferences()
+org.acra.ACRA: org.acra.annotation.ReportsCrashes getConfig()
+org.acra.ACRA: void access$000()
+org.acra.ACRA: void <clinit>()
+org.acra.ErrorReporter
+org.acra.ErrorReporter: void addCustomData(java.lang.String,java.lang.String)
+org.acra.ReportField: org.acra.ReportField[] values()
+org.acra.ReportField: org.acra.ReportField valueOf(java.lang.String)
+org.acra.ReportingInteractionMode
+org.acra.ReportingInteractionMode: org.acra.ReportingInteractionMode SILENT
+org.acra.ReportingInteractionMode: org.acra.ReportingInteractionMode NOTIFICATION
+org.acra.ReportingInteractionMode: org.acra.ReportingInteractionMode TOAST
+org.acra.ReportingInteractionMode: org.acra.ReportingInteractionMode[] $VALUES
+org.acra.ReportingInteractionMode: org.acra.ReportingInteractionMode[] values()
+org.acra.ReportingInteractionMode: org.acra.ReportingInteractionMode valueOf(java.lang.String)
+org.acra.ReportingInteractionMode: ReportingInteractionMode(java.lang.String,int)
+org.acra.ReportingInteractionMode: void <clinit>()

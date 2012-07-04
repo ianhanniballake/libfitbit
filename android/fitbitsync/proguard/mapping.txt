@@ -1,0 +1,862 @@
+com.google.analytics.tracking.android.AdHitIdGenerator -> com.google.analytics.tracking.android.a:
+    boolean adMobSdkInstalled -> a
+    31:34:int getAdHitId() -> a
+com.google.analytics.tracking.android.AdMobInfo -> com.google.analytics.tracking.android.b:
+    com.google.analytics.tracking.android.AdMobInfo INSTANCE -> a
+    int adHitId -> b
+    java.util.Random random -> c
+    40:40:com.google.analytics.tracking.android.AdMobInfo getInstance() -> a
+    55:56:int generateAdHitId() -> b
+com.google.analytics.tracking.android.Analytics -> com.google.analytics.tracking.android.c:
+    void setDebug(boolean) -> a
+    com.google.analytics.tracking.android.Tracker getTracker(java.lang.String) -> a
+com.google.analytics.tracking.android.Analytics$AppOptOutCallback -> com.google.analytics.tracking.android.d:
+    void reportAppOptOut(boolean) -> a
+com.google.analytics.tracking.android.AnalyticsClient -> com.google.analytics.tracking.android.e:
+    void sendHit(java.util.Map,long,java.lang.String,java.util.List) -> a
+    void clearHits() -> a
+    void connect() -> b
+    void disconnect() -> c
+com.google.analytics.tracking.android.AnalyticsGmsCoreClient -> com.google.analytics.tracking.android.f:
+    android.content.ServiceConnection connection -> a
+    com.google.analytics.tracking.android.AnalyticsGmsCoreClient$OnConnectedListener onConnectedListener -> b
+    com.google.analytics.tracking.android.AnalyticsGmsCoreClient$OnConnectionFailedListener onConnectionFailedListener -> c
+    android.content.Context context -> d
+    com.google.android.gms.analytics.internal.IAnalyticsService service -> e
+    68:82:void connect() -> b
+    93:99:void disconnect() -> c
+    105:109:void sendHit(java.util.Map,long,java.lang.String,java.util.List) -> a
+    114:118:void clearHits() -> a
+    120:121:com.google.android.gms.analytics.internal.IAnalyticsService getService() -> f
+    129:133:void checkConnected() -> d
+    139:139:boolean isConnected() -> e
+    181:182:void onServiceBound() -> g
+    189:190:void onConnectionSuccess() -> h
+    23:23:com.google.android.gms.analytics.internal.IAnalyticsService access$002(com.google.analytics.tracking.android.AnalyticsGmsCoreClient,com.google.android.gms.analytics.internal.IAnalyticsService) -> a
+    23:23:void access$100(com.google.analytics.tracking.android.AnalyticsGmsCoreClient) -> a
+    23:23:android.content.Context access$200(com.google.analytics.tracking.android.AnalyticsGmsCoreClient) -> b
+    23:23:android.content.ServiceConnection access$302(com.google.analytics.tracking.android.AnalyticsGmsCoreClient,android.content.ServiceConnection) -> a
+    23:23:com.google.analytics.tracking.android.AnalyticsGmsCoreClient$OnConnectionFailedListener access$400(com.google.analytics.tracking.android.AnalyticsGmsCoreClient) -> c
+    23:23:com.google.analytics.tracking.android.AnalyticsGmsCoreClient$OnConnectedListener access$500(com.google.analytics.tracking.android.AnalyticsGmsCoreClient) -> d
+com.google.analytics.tracking.android.AnalyticsGmsCoreClient$AnalyticsServiceConnection -> com.google.analytics.tracking.android.g:
+    com.google.analytics.tracking.android.AnalyticsGmsCoreClient this$0 -> a
+    146:166:void onServiceConnected(android.content.ComponentName,android.os.IBinder) -> onServiceConnected
+    170:173:void onServiceDisconnected(android.content.ComponentName) -> onServiceDisconnected
+com.google.analytics.tracking.android.AnalyticsGmsCoreClient$OnConnectedListener -> com.google.analytics.tracking.android.h:
+    void onConnected() -> a
+    void onDisconnected() -> b
+com.google.analytics.tracking.android.AnalyticsGmsCoreClient$OnConnectionFailedListener -> com.google.analytics.tracking.android.i:
+    void onConnectionFailed(int,android.content.Intent) -> a
+com.google.analytics.tracking.android.AnalyticsReceiver -> com.google.analytics.tracking.android.AnalyticsReceiver:
+    29:45:void onReceive(android.content.Context,android.content.Intent) -> onReceive
+com.google.analytics.tracking.android.AnalyticsStore -> com.google.analytics.tracking.android.j:
+    void putHit(java.util.Map,long,java.lang.String,java.util.Collection) -> a
+    void clearHits() -> a
+    void dispatch() -> b
+com.google.analytics.tracking.android.AnalyticsStoreStateListener -> com.google.analytics.tracking.android.k:
+    void reportStoreIsEmpty(boolean) -> a
+com.google.analytics.tracking.android.AnalyticsThread -> com.google.analytics.tracking.android.l:
+    void sendHit(java.util.Map) -> a
+    void dispatch() -> a
+    void requestAppOptOut(com.google.analytics.tracking.android.Analytics$AppOptOutCallback) -> a
+    void requestClientId(com.google.analytics.tracking.android.AnalyticsThread$ClientIdCallback) -> a
+    java.util.concurrent.LinkedBlockingQueue getQueue() -> b
+    java.lang.Thread getThread() -> c
+com.google.analytics.tracking.android.AnalyticsThread$ClientIdCallback -> com.google.analytics.tracking.android.m:
+    void reportClientId(java.lang.String) -> a
+com.google.analytics.tracking.android.Clock -> com.google.analytics.tracking.android.n:
+    long currentTimeMillis() -> a
+com.google.analytics.tracking.android.Dispatcher -> com.google.analytics.tracking.android.o:
+    int dispatchHits(java.util.List) -> a
+    boolean okToDispatch() -> a
+com.google.analytics.tracking.android.EasyTracker -> com.google.analytics.tracking.android.p:
+    com.google.analytics.tracking.android.EasyTracker instance -> a
+    boolean gaEnabled -> b
+    java.lang.String gaTrackingId -> c
+    java.lang.String gaAppName -> d
+    java.lang.String gaAppVersion -> e
+    int gaDispatchPeriod -> f
+    boolean gaDebug -> g
+    java.lang.Double gaSampleRate -> h
+    boolean gaAnonymizeIp -> i
+    boolean gaReportUncaughtExceptions -> j
+    java.lang.Thread$UncaughtExceptionHandler handler -> k
+    boolean autoActivityTracking -> l
+    int activitiesActive -> m
+    long gaSessionTimeout -> n
+    long lastOnStopTime -> o
+    android.content.Context gaContext -> p
+    java.util.Map activityNameMap -> q
+    com.google.analytics.tracking.android.Tracker tracker -> r
+    com.google.analytics.tracking.android.ParameterLoader parameterFetcher -> s
+    com.google.analytics.tracking.android.Analytics ga -> t
+    com.google.analytics.tracking.android.ServiceManager serviceManager -> u
+    com.google.analytics.tracking.android.Clock clock -> v
+    java.util.Timer timer -> w
+    java.util.TimerTask timerTask -> x
+    boolean inForeground -> y
+    97:100:com.google.analytics.tracking.android.EasyTracker getInstance() -> a
+    112:116:com.google.analytics.tracking.android.Tracker getTracker() -> b
+    210:210:boolean checkForNewSession() -> c
+    219:272:void loadParameters() -> d
+    292:301:void setContext(android.content.Context) -> a
+    311:321:void setContext(android.content.Context,com.google.analytics.tracking.android.ParameterLoader,com.google.analytics.tracking.android.Analytics,com.google.analytics.tracking.android.ServiceManager) -> a
+    335:356:void activityStart(android.app.Activity) -> a
+    366:385:void activityStop(android.app.Activity) -> b
+    397:401:void clearExistingTimer() -> e
+    413:422:java.lang.String getActivityName(android.app.Activity) -> c
+    80:80:boolean access$102(com.google.analytics.tracking.android.EasyTracker,boolean) -> a
+    80:80:com.google.analytics.tracking.android.Tracker access$200(com.google.analytics.tracking.android.EasyTracker) -> a
+com.google.analytics.tracking.android.EasyTracker$1 -> com.google.analytics.tracking.android.q:
+    com.google.analytics.tracking.android.EasyTracker this$0 -> a
+    86:86:long currentTimeMillis() -> a
+com.google.analytics.tracking.android.EasyTracker$NoopTracker -> com.google.analytics.tracking.android.r:
+    double sampleRate -> b
+    boolean anonymizeIp -> c
+    com.google.analytics.tracking.android.EasyTracker this$0 -> a
+    460:460:void setStartSession(boolean) -> a
+    464:464:void setAppName(java.lang.String) -> a
+    468:468:void setAppVersion(java.lang.String) -> b
+    480:480:void trackView(java.lang.String) -> c
+    484:484:void trackEvent(java.lang.String,java.lang.String,java.lang.String,java.lang.Long) -> a
+    492:492:void trackException(java.lang.String,boolean) -> a
+    527:528:void setAnonymizeIp(boolean) -> b
+    537:538:void setSampleRate(double) -> a
+com.google.analytics.tracking.android.EasyTracker$NotInForegroundTimerTask -> com.google.analytics.tracking.android.s:
+    com.google.analytics.tracking.android.EasyTracker this$0 -> a
+    620:624:void run() -> run
+com.google.analytics.tracking.android.ExceptionParser -> com.google.analytics.tracking.android.t:
+    java.lang.String getDescription(java.lang.String,java.lang.Throwable) -> a
+com.google.analytics.tracking.android.ExceptionReporter -> com.google.analytics.tracking.android.u:
+    java.lang.Thread$UncaughtExceptionHandler originalHandler -> a
+    com.google.analytics.tracking.android.Tracker tracker -> b
+    com.google.analytics.tracking.android.ServiceManager serviceManager -> c
+    com.google.analytics.tracking.android.ExceptionParser exceptionParser -> d
+    64:80:void uncaughtException(java.lang.Thread,java.lang.Throwable) -> uncaughtException
+com.google.analytics.tracking.android.FutureApis -> com.google.analytics.tracking.android.v:
+    26:31:int version() -> a
+    39:53:boolean setOwnerOnlyReadWrite(java.lang.String) -> a
+com.google.analytics.tracking.android.GAServiceManager -> com.google.analytics.tracking.android.w:
+    java.lang.Object MSG_OBJECT -> a
+    android.content.Context ctx -> b
+    com.google.analytics.tracking.android.AnalyticsStore store -> c
+    com.google.analytics.tracking.android.AnalyticsThread thread -> d
+    int dispatchPeriodInSeconds -> e
+    boolean pendingDispatch -> f
+    com.google.analytics.tracking.android.AnalyticsStoreStateListener listener -> g
+    android.os.Handler handler -> h
+    boolean powerSaveMode -> i
+    com.google.analytics.tracking.android.GAServiceManager instance -> j
+    57:60:com.google.analytics.tracking.android.GAServiceManager getInstance() -> a
+    76:96:void initializeHandler() -> e
+    107:118:void initialize(android.content.Context,com.google.analytics.tracking.android.AnalyticsThread) -> a
+    139:151:com.google.analytics.tracking.android.AnalyticsStore getStore() -> b
+    158:165:void dispatch() -> c
+    169:182:void setDispatchPeriod(int) -> a
+    188:200:void updatePowerSaveMode(boolean) -> a
+    20:20:java.lang.Object access$000() -> d
+    20:20:int access$100(com.google.analytics.tracking.android.GAServiceManager) -> a
+    20:20:boolean access$200(com.google.analytics.tracking.android.GAServiceManager) -> b
+    20:20:android.os.Handler access$300(com.google.analytics.tracking.android.GAServiceManager) -> c
+com.google.analytics.tracking.android.GAServiceManager$1 -> com.google.analytics.tracking.android.x:
+    com.google.analytics.tracking.android.GAServiceManager this$0 -> a
+    45:46:void reportStoreIsEmpty(boolean) -> a
+com.google.analytics.tracking.android.GAServiceManager$2 -> com.google.analytics.tracking.android.y:
+    com.google.analytics.tracking.android.GAServiceManager this$0 -> a
+    80:88:boolean handleMessage(android.os.Message) -> handleMessage
+com.google.analytics.tracking.android.GAServiceProxy -> com.google.analytics.tracking.android.z:
+    long lastRequestTime -> a
+    com.google.analytics.tracking.android.GAServiceProxy$ConnectState state -> b
+    com.google.analytics.tracking.android.AnalyticsClient client -> c
+    com.google.analytics.tracking.android.AnalyticsStore store -> d
+    com.google.analytics.tracking.android.AnalyticsStore testStore -> e
+    com.google.analytics.tracking.android.AnalyticsThread thread -> f
+    android.content.Context ctx -> g
+    java.util.Queue queue -> h
+    int connectTries -> i
+    java.util.Timer reConnectTimer -> j
+    java.util.Timer failedConnectTimer -> k
+    java.util.Timer disconnectCheckTimer -> l
+    boolean pendingDispatch -> m
+    boolean pendingClearHits -> n
+    com.google.analytics.tracking.android.Clock clock -> o
+    long idleTimeout -> p
+    95:99:void putHit(java.util.Map,long,java.lang.String,java.util.List) -> a
+    103:113:void dispatch() -> c
+    117:132:void clearHits() -> d
+    141:144:java.util.Timer cancelTimer(java.util.Timer) -> a
+    148:151:void clearAllTimers() -> f
+    159:164:void createService() -> e
+    194:239:void sendQueue() -> g
+    245:247:void dispatchToStore() -> h
+    253:268:void useStore() -> i
+    271:288:void connectToService() -> j
+    291:295:void disconnectFromService() -> k
+    299:307:void onConnected() -> a
+    311:324:void onDisconnected() -> b
+    328:335:void onConnectionFailed(int,android.content.Intent) -> a
+    338:341:void fireReconnectAttempt() -> l
+    27:27:void access$000(com.google.analytics.tracking.android.GAServiceProxy) -> a
+    27:27:com.google.analytics.tracking.android.GAServiceProxy$ConnectState access$400(com.google.analytics.tracking.android.GAServiceProxy) -> b
+    27:27:void access$500(com.google.analytics.tracking.android.GAServiceProxy) -> c
+    27:27:void access$600(com.google.analytics.tracking.android.GAServiceProxy) -> d
+    27:27:java.util.Queue access$700(com.google.analytics.tracking.android.GAServiceProxy) -> e
+    27:27:long access$800(com.google.analytics.tracking.android.GAServiceProxy) -> f
+    27:27:long access$900(com.google.analytics.tracking.android.GAServiceProxy) -> g
+    27:27:com.google.analytics.tracking.android.Clock access$1000(com.google.analytics.tracking.android.GAServiceProxy) -> h
+    27:27:void access$1100(com.google.analytics.tracking.android.GAServiceProxy) -> i
+    27:27:java.util.Timer access$1200(com.google.analytics.tracking.android.GAServiceProxy) -> j
+com.google.analytics.tracking.android.GAServiceProxy$1 -> com.google.analytics.tracking.android.aa:
+    com.google.analytics.tracking.android.GAServiceProxy this$0 -> a
+    74:74:long currentTimeMillis() -> a
+com.google.analytics.tracking.android.GAServiceProxy$2 -> com.google.analytics.tracking.android.ab:
+    com.google.analytics.tracking.android.GAServiceProxy this$0 -> a
+    198:199:void run() -> run
+com.google.analytics.tracking.android.GAServiceProxy$3 -> com.google.analytics.tracking.android.ac:
+    int[] $SwitchMap$com$google$analytics$tracking$android$GAServiceProxy$ConnectState -> a
+com.google.analytics.tracking.android.GAServiceProxy$ConnectState -> com.google.analytics.tracking.android.ad:
+    com.google.analytics.tracking.android.GAServiceProxy$ConnectState CONNECTING -> a
+    com.google.analytics.tracking.android.GAServiceProxy$ConnectState CONNECTED_SERVICE -> b
+    com.google.analytics.tracking.android.GAServiceProxy$ConnectState CONNECTED_LOCAL -> c
+    com.google.analytics.tracking.android.GAServiceProxy$ConnectState BLOCKED -> d
+    com.google.analytics.tracking.android.GAServiceProxy$ConnectState PENDING_CONNECTION -> e
+    com.google.analytics.tracking.android.GAServiceProxy$ConnectState PENDING_DISCONNECT -> f
+    com.google.analytics.tracking.android.GAServiceProxy$ConnectState DISCONNECTED -> g
+    com.google.analytics.tracking.android.GAServiceProxy$ConnectState[] $VALUES -> h
+    29:29:com.google.analytics.tracking.android.GAServiceProxy$ConnectState[] values() -> values
+    29:29:com.google.analytics.tracking.android.GAServiceProxy$ConnectState valueOf(java.lang.String) -> valueOf
+com.google.analytics.tracking.android.GAServiceProxy$DisconnectCheckTask -> com.google.analytics.tracking.android.ae:
+    com.google.analytics.tracking.android.GAServiceProxy this$0 -> a
+    363:371:void run() -> run
+com.google.analytics.tracking.android.GAServiceProxy$FailedConnectTask -> com.google.analytics.tracking.android.af:
+    com.google.analytics.tracking.android.GAServiceProxy this$0 -> a
+    346:350:void run() -> run
+com.google.analytics.tracking.android.GAServiceProxy$HitParams -> com.google.analytics.tracking.android.ag:
+    java.util.Map wireFormatParams -> a
+    long hitTimeInMilliseconds -> b
+    java.lang.String path -> c
+    java.util.List commands -> d
+    392:392:java.util.Map getWireFormatParams() -> a
+    396:396:long getHitTimeInMilliseconds() -> b
+    400:400:java.lang.String getPath() -> c
+    404:404:java.util.List getCommands() -> d
+com.google.analytics.tracking.android.GAServiceProxy$ReconnectTask -> com.google.analytics.tracking.android.ah:
+    com.google.analytics.tracking.android.GAServiceProxy this$0 -> a
+    356:357:void run() -> run
+com.google.analytics.tracking.android.GAThread -> com.google.analytics.tracking.android.ai:
+    java.util.concurrent.LinkedBlockingQueue queue -> a
+    boolean disabled -> b
+    boolean closed -> c
+    boolean appOptOut -> d
+    java.util.List commands -> e
+    com.google.analytics.tracking.android.MetaModel metaModel -> f
+    java.lang.String installCampaign -> g
+    java.lang.String clientId -> h
+    com.google.analytics.tracking.android.GAThread instance -> i
+    com.google.analytics.tracking.android.ServiceProxy proxy -> j
+    android.content.Context ctx -> k
+    63:66:com.google.analytics.tracking.android.GAThread getInstance(android.content.Context) -> a
+    88:97:void init() -> f
+    101:127:void sendHit(java.util.Map) -> a
+    131:137:java.lang.String getHostUrl(java.util.Map) -> b
+    144:174:void fillExceptionParameters(java.util.Map) -> c
+    179:192:boolean isSampledOut(java.util.Map) -> d
+    197:217:void fillAppParameters(java.util.Map) -> e
+    220:223:void putIfAbsent(java.util.Map,java.lang.String,java.lang.String) -> a
+    226:246:void fillCampaignParameters(java.util.Map) -> f
+    250:258:void dispatch() -> a
+    291:299:void requestAppOptOut(com.google.analytics.tracking.android.Analytics$AppOptOutCallback) -> a
+    303:311:void requestClientId(com.google.analytics.tracking.android.AnalyticsThread$ClientIdCallback) -> a
+    314:315:void queueToThread(java.lang.Runnable) -> a
+    322:322:boolean loadAppOptOut() -> g
+    333:343:boolean storeClientId(java.lang.String) -> a
+    361:366:java.lang.String generateClientId() -> d
+    370:403:java.lang.String initializeClientId() -> e
+    414:445:java.lang.String getAndClearCampaign(android.content.Context) -> b
+    451:479:void run() -> run
+    483:483:java.util.concurrent.LinkedBlockingQueue getQueue() -> b
+    488:488:java.lang.Thread getThread() -> c
+    35:35:boolean access$000(com.google.analytics.tracking.android.GAThread) -> a
+    35:35:boolean access$100(com.google.analytics.tracking.android.GAThread,java.util.Map) -> a
+    35:35:java.lang.String access$200(com.google.analytics.tracking.android.GAThread) -> b
+    35:35:java.lang.String access$300(com.google.analytics.tracking.android.GAThread) -> c
+    35:35:java.lang.String access$302(com.google.analytics.tracking.android.GAThread,java.lang.String) -> a
+    35:35:void access$400(com.google.analytics.tracking.android.GAThread,java.util.Map) -> b
+    35:35:void access$500(com.google.analytics.tracking.android.GAThread,java.util.Map) -> c
+    35:35:void access$600(com.google.analytics.tracking.android.GAThread,java.util.Map) -> d
+    35:35:com.google.analytics.tracking.android.MetaModel access$700(com.google.analytics.tracking.android.GAThread) -> d
+    35:35:java.lang.String access$800(com.google.analytics.tracking.android.GAThread,java.util.Map) -> e
+    35:35:java.util.List access$900(com.google.analytics.tracking.android.GAThread) -> e
+    35:35:com.google.analytics.tracking.android.ServiceProxy access$1000(com.google.analytics.tracking.android.GAThread) -> f
+com.google.analytics.tracking.android.GAThread$1 -> com.google.analytics.tracking.android.aj:
+    java.util.Map val$hitCopy -> a
+    long val$hitTime -> b
+    com.google.analytics.tracking.android.GAThread this$0 -> c
+    112:125:void run() -> run
+com.google.analytics.tracking.android.GAThread$2 -> com.google.analytics.tracking.android.ak:
+    com.google.analytics.tracking.android.GAThread this$0 -> a
+    254:255:void run() -> run
+com.google.analytics.tracking.android.GAThread$4 -> com.google.analytics.tracking.android.al:
+    com.google.analytics.tracking.android.Analytics$AppOptOutCallback val$callback -> a
+    com.google.analytics.tracking.android.GAThread this$0 -> b
+    295:296:void run() -> run
+com.google.analytics.tracking.android.GAThread$5 -> com.google.analytics.tracking.android.am:
+    com.google.analytics.tracking.android.AnalyticsThread$ClientIdCallback val$callback -> a
+    com.google.analytics.tracking.android.GAThread this$0 -> b
+    307:308:void run() -> run
+com.google.analytics.tracking.android.GoogleAnalytics -> com.google.analytics.tracking.android.an:
+    boolean debug -> a
+    com.google.analytics.tracking.android.AnalyticsThread thread -> b
+    android.content.Context context -> c
+    com.google.analytics.tracking.android.Tracker defaultTracker -> d
+    com.google.analytics.tracking.android.AdHitIdGenerator adHitIdGenerator -> e
+    java.lang.String clientId -> f
+    java.lang.Boolean appOptOut -> g
+    java.util.Map trackers -> h
+    java.lang.String lastTrackingId -> i
+    com.google.analytics.tracking.android.GoogleAnalytics instance -> j
+    91:94:com.google.analytics.tracking.android.GoogleAnalytics getInstance(android.content.Context) -> a
+    131:133:void setDebug(boolean) -> a
+    142:155:com.google.analytics.tracking.android.Tracker getTracker(java.lang.String) -> a
+    178:189:void sendHit(java.util.Map) -> a
+    24:24:java.lang.Boolean access$002(com.google.analytics.tracking.android.GoogleAnalytics,java.lang.Boolean) -> a
+    24:24:java.lang.String access$102(com.google.analytics.tracking.android.GoogleAnalytics,java.lang.String) -> a
+com.google.analytics.tracking.android.GoogleAnalytics$1 -> com.google.analytics.tracking.android.ao:
+    com.google.analytics.tracking.android.GoogleAnalytics this$0 -> a
+    70:71:void reportAppOptOut(boolean) -> a
+com.google.analytics.tracking.android.GoogleAnalytics$2 -> com.google.analytics.tracking.android.ap:
+    com.google.analytics.tracking.android.GoogleAnalytics this$0 -> a
+    78:80:void reportClientId(java.lang.String) -> a
+com.google.analytics.tracking.android.GoogleTracker -> com.google.analytics.tracking.android.aq:
+    java.text.DecimalFormat DF -> a
+    com.google.analytics.tracking.android.TrackerHandler handler -> b
+    com.google.analytics.tracking.android.GoogleTracker$SimpleModel model -> c
+    boolean trackerClosed -> d
+    boolean trackingStarted -> e
+    59:62:void assertTrackerOpen() -> b
+    66:75:void send(java.lang.String,java.util.Map) -> a
+    79:81:void setStartSession(boolean) -> a
+    85:87:void setAppScreen(java.lang.String) -> d
+    91:96:void trackView() -> a
+    100:103:void trackView(java.lang.String) -> c
+    107:108:void trackEvent(java.lang.String,java.lang.String,java.lang.String,java.lang.Long) -> a
+    121:122:void trackException(java.lang.String,boolean) -> a
+    154:162:java.util.Map constructEvent(java.lang.String,java.lang.String,java.lang.String,java.lang.Long) -> b
+    200:204:java.util.Map constructException(java.lang.String,boolean) -> b
+    249:250:void setAnonymizeIp(boolean) -> b
+    254:255:void setSampleRate(double) -> a
+    292:302:void setAppName(java.lang.String) -> a
+    309:314:void setAppVersion(java.lang.String) -> b
+com.google.analytics.tracking.android.GoogleTracker$1 -> com.google.analytics.tracking.android.ar:
+com.google.analytics.tracking.android.GoogleTracker$SimpleModel -> com.google.analytics.tracking.android.as:
+    java.util.Map temporaryMap -> a
+    java.util.Map permanentMap -> b
+    362:363:void setForNextHit(java.lang.String,java.lang.String) -> a
+    366:367:void set(java.lang.String,java.lang.String) -> b
+    370:371:void clearTemporaryValues() -> a
+    374:378:java.lang.String get(java.lang.String) -> a
+    382:387:void setAll(java.util.Map,java.lang.Boolean) -> a
+    390:392:java.util.Map getKeysAndValues() -> b
+com.google.analytics.tracking.android.Hit -> com.google.analytics.tracking.android.at:
+    java.lang.String hitString -> a
+    long hitId -> b
+    long hitTime -> c
+    java.lang.String hitUrl -> d
+    21:21:java.lang.String getHitParams() -> a
+    25:26:void setHitString(java.lang.String) -> a
+    29:29:long getHitId() -> b
+    33:33:long getHitTime() -> c
+    43:43:java.lang.String getHitUrl() -> d
+    48:49:void setHitUrl(java.lang.String) -> b
+com.google.analytics.tracking.android.HitBuilder -> com.google.analytics.tracking.android.au:
+    25:47:java.util.Map generateHitParams(com.google.analytics.tracking.android.MetaModel,java.util.Map) -> a
+    59:78:java.lang.String postProcessHit(com.google.analytics.tracking.android.Hit,long) -> a
+    83:85:java.lang.String encode(java.lang.String) -> a
+com.google.analytics.tracking.android.HttpClientFactory -> com.google.analytics.tracking.android.av:
+    org.apache.http.client.HttpClient newInstance() -> a
+com.google.analytics.tracking.android.Log -> com.google.analytics.tracking.android.aw:
+    boolean debug -> a
+    26:27:void setDebug(boolean) -> a
+    35:35:boolean debugEnabled() -> a
+    46:46:int d(java.lang.String) -> a
+    57:60:int dDebug(java.lang.String) -> b
+    71:71:int e(java.lang.String) -> c
+    96:96:int i(java.lang.String) -> d
+    107:110:int iDebug(java.lang.String) -> e
+    121:121:int v(java.lang.String) -> f
+    132:135:int vDebug(java.lang.String) -> g
+    146:146:int w(java.lang.String) -> h
+    157:160:int wDebug(java.lang.String) -> i
+    164:164:java.lang.String formatMessage(java.lang.String) -> j
+com.google.analytics.tracking.android.MetaModel -> com.google.analytics.tracking.android.ax:
+    java.util.Map metaInfos -> a
+    20:24:com.google.analytics.tracking.android.MetaModel$MetaInfo getMetaInfo(java.lang.String) -> a
+    35:36:void addField(java.lang.String,java.lang.String,java.lang.String,com.google.analytics.tracking.android.MetaModel$Formatter) -> a
+com.google.analytics.tracking.android.MetaModel$Formatter -> com.google.analytics.tracking.android.ay:
+    java.lang.String format(java.lang.String) -> a
+com.google.analytics.tracking.android.MetaModel$MetaInfo -> com.google.analytics.tracking.android.az:
+    java.lang.String urlParam -> a
+    java.lang.String defaultValue -> b
+    com.google.analytics.tracking.android.MetaModel$Formatter formatter -> c
+    53:53:java.lang.String getUrlParam() -> a
+    57:57:java.lang.String getDefaultValue() -> b
+    61:61:com.google.analytics.tracking.android.MetaModel$Formatter getFormatter() -> c
+com.google.analytics.tracking.android.MetaModelInitializer -> com.google.analytics.tracking.android.ba:
+    com.google.analytics.tracking.android.MetaModel$Formatter BOOLEAN_FORMATTER -> a
+    com.google.analytics.tracking.android.MetaModel$Formatter UP_TO_TWO_DIGIT_FLOAT_FORMATTER -> b
+    34:117:void set(com.google.analytics.tracking.android.MetaModel) -> a
+com.google.analytics.tracking.android.MetaModelInitializer$1 -> com.google.analytics.tracking.android.bb:
+    17:17:java.lang.String format(java.lang.String) -> a
+com.google.analytics.tracking.android.MetaModelInitializer$2 -> com.google.analytics.tracking.android.bc:
+    java.text.DecimalFormat floatFormat -> a
+    25:25:java.lang.String format(java.lang.String) -> a
+com.google.analytics.tracking.android.ParameterLoader -> com.google.analytics.tracking.android.bd:
+    java.lang.String getString(java.lang.String) -> a
+    java.lang.Double getDoubleFromString(java.lang.String) -> b
+    boolean getBoolean(java.lang.String) -> c
+    int getInt(java.lang.String,int) -> a
+com.google.analytics.tracking.android.ParameterLoaderImpl -> com.google.analytics.tracking.android.be:
+    android.content.Context ctx -> a
+    36:39:int getResourceIdForType(java.lang.String,java.lang.String) -> a
+    44:48:java.lang.String getString(java.lang.String) -> a
+    54:58:boolean getBoolean(java.lang.String) -> c
+    64:72:int getInt(java.lang.String,int) -> a
+    84:92:java.lang.Double getDoubleFromString(java.lang.String) -> b
+com.google.analytics.tracking.android.PersistentAnalyticsStore -> com.google.analytics.tracking.android.bf:
+    long tokens -> a
+    long lastTrackTime -> b
+    boolean throttlingEnabled -> c
+    java.lang.String CREATE_HITS_TABLE -> d
+    com.google.analytics.tracking.android.PersistentAnalyticsStore$AnalyticsDatabaseHelper dbHelper -> e
+    com.google.analytics.tracking.android.Dispatcher dispatcher -> f
+    com.google.analytics.tracking.android.AnalyticsStoreStateListener listener -> g
+    android.content.Context context -> h
+    java.lang.String databaseName -> i
+    long lastDeleteStaleHitsTime -> j
+    125:125:com.google.analytics.tracking.android.HttpClientFactory createDefaultHttpClientFactory() -> g
+    151:159:void clearHits() -> a
+    177:185:void putHit(java.util.Map,long,java.lang.String,java.util.Collection) -> a
+    193:200:void fillVersionParametersIfNecessary(java.util.Map,java.util.Collection) -> a
+    207:217:void storeVersion(java.util.Map,java.lang.String,java.lang.String) -> a
+    225:231:void removeOldHitIfFull() -> h
+    236:264:void writeHitToDatabase(java.util.Map,long,java.lang.String) -> a
+    267:271:java.lang.String generateHitString(java.util.Map) -> a
+    283:373:java.util.List peekHits(int) -> a
+    389:402:int deleteStaleHits() -> c
+    411:436:void deleteHits(java.util.Collection) -> a
+    439:457:int getNumStoredHits() -> d
+    462:486:void dispatch() -> b
+    519:535:boolean tokensAvailable() -> e
+    562:569:android.database.sqlite.SQLiteDatabase getWritableDatabase(java.lang.String) -> a
+    36:36:java.lang.String access$000() -> f
+com.google.analytics.tracking.android.PersistentAnalyticsStore$1 -> com.google.analytics.tracking.android.bg:
+    com.google.analytics.tracking.android.PersistentAnalyticsStore this$0 -> a
+    128:128:org.apache.http.client.HttpClient newInstance() -> a
+com.google.analytics.tracking.android.PersistentAnalyticsStore$AnalyticsDatabaseHelper -> com.google.analytics.tracking.android.bh:
+    boolean badDatabase -> b
+    com.google.analytics.tracking.android.PersistentAnalyticsStore this$0 -> a
+    602:617:boolean tablePresent(java.lang.String,android.database.sqlite.SQLiteDatabase) -> a
+    631:634:android.database.sqlite.SQLiteDatabase getWritableDatabase() -> getWritableDatabase
+    640:648:void onOpen(android.database.sqlite.SQLiteDatabase) -> onOpen
+    652:653:void onCreate(android.database.sqlite.SQLiteDatabase) -> onCreate
+    661:661:void onUpgrade(android.database.sqlite.SQLiteDatabase,int,int) -> onUpgrade
+com.google.analytics.tracking.android.ServiceManager -> com.google.analytics.tracking.android.bi:
+    void dispatch() -> c
+    void setDispatchPeriod(int) -> a
+com.google.analytics.tracking.android.ServiceProxy -> com.google.analytics.tracking.android.bj:
+    void putHit(java.util.Map,long,java.lang.String,java.util.List) -> a
+    void dispatch() -> c
+    void createService() -> e
+com.google.analytics.tracking.android.SimpleNetworkDispatcher -> com.google.analytics.tracking.android.bk:
+    java.lang.String userAgent -> a
+    com.google.analytics.tracking.android.HttpClientFactory httpClientFactory -> b
+    android.content.Context ctx -> c
+    65:76:boolean okToDispatch() -> a
+    81:136:int dispatchHits(java.util.List) -> a
+    149:169:org.apache.http.HttpEntityEnclosingRequest buildRequest(java.lang.String,java.lang.String) -> a
+    179:187:void logDebugInformation(boolean,org.apache.http.HttpEntityEnclosingRequest) -> a
+    196:196:java.lang.String createUserAgentString(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String) -> a
+    205:214:java.net.URL getUrl(com.google.analytics.tracking.android.Hit) -> a
+com.google.analytics.tracking.android.StandardExceptionParser -> com.google.analytics.tracking.android.bl:
+    java.util.TreeSet includedPackages -> a
+    57:105:void setIncludedPackages(android.content.Context,java.util.Collection) -> a
+    116:120:java.lang.Throwable getCause(java.lang.Throwable) -> a
+    131:143:java.lang.StackTraceElement getBestStackTraceElement(java.lang.Throwable) -> b
+    152:168:java.lang.String getDescription(java.lang.Throwable,java.lang.StackTraceElement,java.lang.String) -> a
+    173:173:java.lang.String getDescription(java.lang.String,java.lang.Throwable) -> a
+com.google.analytics.tracking.android.Tracker -> com.google.analytics.tracking.android.bm:
+    void setStartSession(boolean) -> a
+    void setAppName(java.lang.String) -> a
+    void setAppVersion(java.lang.String) -> b
+    void trackView(java.lang.String) -> c
+    void trackEvent(java.lang.String,java.lang.String,java.lang.String,java.lang.Long) -> a
+    void trackException(java.lang.String,boolean) -> a
+    void setAnonymizeIp(boolean) -> b
+    void setSampleRate(double) -> a
+com.google.analytics.tracking.android.TrackerHandler -> com.google.analytics.tracking.android.bn:
+    void sendHit(java.util.Map) -> a
+com.google.analytics.tracking.android.Utils -> com.google.analytics.tracking.android.bo:
+    char[] HEXBYTES -> a
+    24:34:java.util.Map parseURLParameters(java.lang.String) -> a
+    39:45:double safeParseDouble(java.lang.String) -> b
+    63:63:boolean safeParseBoolean(java.lang.String) -> c
+    76:126:java.lang.String filterCampaign(java.lang.String) -> d
+    138:149:java.lang.String getLanguage(java.util.Locale) -> a
+    163:169:int fromHexDigit(char) -> a
+    173:178:byte[] hexDecode(java.lang.String) -> e
+com.google.android.gms.analytics.internal.Command -> com.google.android.gms.analytics.internal.Command:
+    java.lang.String id -> a
+    java.lang.String urlParam -> b
+    java.lang.String value -> c
+    android.os.Parcelable$Creator CREATOR -> CREATOR
+    43:43:java.lang.String getId() -> a
+    47:47:java.lang.String getUrlParam() -> b
+    51:51:java.lang.String getValue() -> c
+    75:75:int describeContents() -> describeContents
+    80:83:void writeToParcel(android.os.Parcel,int) -> writeToParcel
+    86:89:void readFromParcel(android.os.Parcel) -> a
+com.google.android.gms.analytics.internal.Command$1 -> com.google.android.gms.analytics.internal.a:
+    57:57:com.google.android.gms.analytics.internal.Command createFromParcel(android.os.Parcel) -> a
+    62:62:com.google.android.gms.analytics.internal.Command[] newArray(int) -> a
+    54:54:java.lang.Object[] newArray(int) -> newArray
+    54:54:java.lang.Object createFromParcel(android.os.Parcel) -> createFromParcel
+com.google.android.gms.analytics.internal.IAnalyticsService -> com.google.android.gms.analytics.internal.b:
+    void sendHit(java.util.Map,long,java.lang.String,java.util.List) -> a
+    void clearHits() -> a
+com.google.android.gms.analytics.internal.IAnalyticsService$Stub -> com.google.android.gms.analytics.internal.c:
+    26:33:com.google.android.gms.analytics.internal.IAnalyticsService asInterface(android.os.IBinder) -> a
+    41:72:boolean onTransact(int,android.os.Parcel,android.os.Parcel,int) -> onTransact
+com.google.android.gms.analytics.internal.IAnalyticsService$Stub$Proxy -> com.google.android.gms.analytics.internal.d:
+    android.os.IBinder mRemote -> a
+    83:83:android.os.IBinder asBinder() -> asBinder
+    102:117:void sendHit(java.util.Map,long,java.lang.String,java.util.List) -> a
+    123:134:void clearHits() -> a
+com.ianhaniballake.antprotocol.ANT -> com.a.a.a:
+    android.hardware.usb.UsbDeviceConnection connection -> a
+    android.hardware.usb.UsbInterface intf -> b
+    android.hardware.usb.UsbEndpoint mEndpointIn -> c
+    android.hardware.usb.UsbEndpoint mEndpointOut -> d
+    41:43:void closeConnection() -> a
+    48:50:void controlTransfer(int,int,int,int,byte[]) -> a
+    55:57:void controlTransfer(int,int,int,int,int) -> a
+    61:61:int read(byte[],int) -> a
+com.ianhanniballake.fitbit.Fitbit -> com.ianhanniballake.a.a:
+    com.ianhaniballake.antprotocol.ANT ant -> a
+    android.hardware.usb.UsbDevice device -> b
+    android.hardware.usb.UsbManager manager -> c
+    25:28:void close() -> a
+    32:45:void init() -> b
+    49:54:boolean open() -> c
+com.ianhanniballake.fitbitsync.FitbitSyncApplication -> com.ianhanniballake.fitbitsync.FitbitSyncApplication:
+    31:50:void onCreate() -> onCreate
+com.ianhanniballake.fitbitsync.ui.FitbitSyncActivity -> com.ianhanniballake.fitbitsync.ui.FitbitSyncActivity:
+    android.hardware.usb.UsbDevice device -> b
+    com.ianhanniballake.fitbit.Fitbit fitbit -> c
+    android.content.BroadcastReceiver usbReceiver -> a
+    49:86:void onCreate(android.os.Bundle) -> onCreate
+    91:93:void onStart() -> onStart
+    98:100:void onStop() -> onStop
+    22:22:android.hardware.usb.UsbDevice access$0(com.ianhanniballake.fitbitsync.ui.FitbitSyncActivity) -> a
+    23:23:com.ianhanniballake.fitbit.Fitbit access$1(com.ianhanniballake.fitbitsync.ui.FitbitSyncActivity) -> b
+    23:23:void access$2(com.ianhanniballake.fitbitsync.ui.FitbitSyncActivity,com.ianhanniballake.fitbit.Fitbit) -> a
+com.ianhanniballake.fitbitsync.ui.FitbitSyncActivity$1 -> com.ianhanniballake.fitbitsync.ui.a:
+    com.ianhanniballake.fitbitsync.ui.FitbitSyncActivity this$0 -> a
+    29:43:void onReceive(android.content.Context,android.content.Intent) -> onReceive
+com.ianhanniballake.fitbitsync.ui.FitbitSyncActivity$2 -> com.ianhanniballake.fitbitsync.ui.b:
+    com.ianhanniballake.fitbitsync.ui.FitbitSyncActivity this$0 -> a
+    android.widget.TextView val$log -> b
+    58:63:void onClick(android.view.View) -> onClick
+com.ianhanniballake.fitbitsync.ui.FitbitSyncActivity$3 -> com.ianhanniballake.fitbitsync.ui.c:
+    com.ianhanniballake.fitbitsync.ui.FitbitSyncActivity this$0 -> a
+    android.widget.TextView val$log -> b
+    71:75:void onClick(android.view.View) -> onClick
+org.acra.ACRA -> org.acra.ACRA:
+    boolean DEV_LOGGING -> DEV_LOGGING
+    java.lang.String LOG_TAG -> LOG_TAG
+    java.lang.String RES_NOTIF_ICON -> RES_NOTIF_ICON
+    java.lang.String RES_NOTIF_TICKER_TEXT -> RES_NOTIF_TICKER_TEXT
+    java.lang.String RES_NOTIF_TITLE -> RES_NOTIF_TITLE
+    java.lang.String RES_NOTIF_TEXT -> RES_NOTIF_TEXT
+    java.lang.String RES_DIALOG_ICON -> RES_DIALOG_ICON
+    java.lang.String RES_DIALOG_TITLE -> RES_DIALOG_TITLE
+    java.lang.String RES_DIALOG_TEXT -> RES_DIALOG_TEXT
+    java.lang.String RES_DIALOG_COMMENT_PROMPT -> RES_DIALOG_COMMENT_PROMPT
+    java.lang.String RES_DIALOG_OK_TOAST -> RES_DIALOG_OK_TOAST
+    java.lang.String RES_TOAST_TEXT -> RES_TOAST_TEXT
+    int NOTIF_CRASH_ID -> NOTIF_CRASH_ID
+    java.lang.String PREF_DISABLE_ACRA -> PREF_DISABLE_ACRA
+    java.lang.String PREF_ENABLE_ACRA -> PREF_ENABLE_ACRA
+    java.lang.String PREF_ENABLE_SYSTEM_LOGS -> PREF_ENABLE_SYSTEM_LOGS
+    java.lang.String PREF_ENABLE_DEVICE_ID -> PREF_ENABLE_DEVICE_ID
+    java.lang.String PREF_USER_EMAIL_ADDRESS -> PREF_USER_EMAIL_ADDRESS
+    java.lang.String PREF_ALWAYS_ACCEPT -> PREF_ALWAYS_ACCEPT
+    android.app.Application mApplication -> mApplication
+    org.acra.annotation.ReportsCrashes mReportsCrashes -> mReportsCrashes
+    android.content.SharedPreferences$OnSharedPreferenceChangeListener mPrefListener -> mPrefListener
+    android.text.format.Time mAppStartDate -> mAppStartDate
+    org.acra.ReportField[] DEFAULT_MAIL_REPORT_FIELDS -> DEFAULT_MAIL_REPORT_FIELDS
+    org.acra.ReportField[] DEFAULT_REPORT_FIELDS -> DEFAULT_REPORT_FIELDS
+    java.lang.String NULL_VALUE -> NULL_VALUE
+    186:249:void init(android.app.Application) -> init
+    257:301:void initAcra() -> initAcra
+    304:319:void checkCrashResources() -> checkCrashResources
+    331:337:android.content.SharedPreferences getACRASharedPreferences() -> getACRASharedPreferences
+    346:346:org.acra.annotation.ReportsCrashes getConfig() -> getConfig
+    77:77:void access$000() -> access$000
+org.acra.ACRA$1 -> org.acra.a:
+    201:220:void onSharedPreferenceChanged(android.content.SharedPreferences,java.lang.String) -> onSharedPreferenceChanged
+org.acra.ACRA$2 -> org.acra.b:
+    int[] $SwitchMap$org$acra$ReportingInteractionMode -> a
+org.acra.ACRAConfigurationException -> org.acra.c:
+org.acra.Compatibility -> org.acra.d:
+    40:52:int getAPILevel() -> a
+    66:70:java.lang.String getDropBoxServiceName() -> b
+org.acra.ConfigurationInspector -> org.acra.e:
+    android.util.SparseArray mHardKeyboardHiddenValues -> a
+    android.util.SparseArray mKeyboardValues -> b
+    android.util.SparseArray mKeyboardHiddenValues -> c
+    android.util.SparseArray mNavigationValues -> d
+    android.util.SparseArray mNavigationHiddenValues -> e
+    android.util.SparseArray mOrientationValues -> f
+    android.util.SparseArray mScreenLayoutValues -> g
+    android.util.SparseArray mTouchScreenValues -> h
+    android.util.SparseArray mUiModeValues -> i
+    java.util.HashMap mValueArrays -> j
+    120:139:java.lang.String toString(android.content.res.Configuration) -> a
+    160:178:java.lang.String getFieldValueName(android.content.res.Configuration,java.lang.reflect.Field) -> a
+    196:211:java.lang.String activeFlags(android.util.SparseArray,int) -> a
+org.acra.CrashReportData -> org.acra.f:
+    org.acra.CrashReportData defaults -> a
+    java.lang.String lineSeparator -> b
+    93:130:void dumpString(java.lang.StringBuilder,java.lang.String,boolean) -> a
+    142:146:java.lang.String getProperty(org.acra.ReportField) -> a
+    252:265:void load(java.io.InputStream) -> a
+    269:282:boolean isEbcdic(java.io.BufferedInputStream) -> a
+    314:472:void load(java.io.Reader) -> a
+    534:552:void store(java.io.OutputStream,java.lang.String) -> a
+org.acra.CrashReportDialog -> org.acra.g:
+    android.content.SharedPreferences prefs -> b
+    android.widget.EditText userComment -> c
+    android.widget.EditText userEmail -> d
+    java.lang.String mReportFileName -> a
+    62:189:void onCreate(android.os.Bundle) -> onCreate
+    195:197:void cancelNotification() -> a
+    48:48:android.widget.EditText access$000(org.acra.CrashReportDialog) -> a
+    48:48:android.content.SharedPreferences access$100(org.acra.CrashReportDialog) -> b
+    48:48:android.widget.EditText access$200(org.acra.CrashReportDialog) -> c
+org.acra.CrashReportDialog$1 -> org.acra.h:
+    org.acra.CrashReportDialog this$0 -> a
+    131:161:void onClick(android.view.View) -> onClick
+org.acra.CrashReportDialog$2 -> org.acra.i:
+    org.acra.CrashReportDialog this$0 -> a
+    171:173:void onClick(android.view.View) -> onClick
+org.acra.DeviceFeaturesCollector -> org.acra.j:
+    35:61:java.lang.String getFeatures(android.content.Context) -> a
+org.acra.DropBoxCollector -> org.acra.k:
+    java.lang.String[] SYSTEM_TAGS -> a
+    56:124:java.lang.String read(android.content.Context,java.lang.String[]) -> a
+org.acra.DumpSysCollector -> org.acra.l:
+    40:60:java.lang.String collectMemInfo() -> a
+org.acra.ErrorReporter -> org.acra.ErrorReporter:
+    boolean enabled -> c
+    java.util.ArrayList mReportSenders -> d
+    org.acra.CrashReportData mCrashProperties -> e
+    java.util.Map mCustomParameters -> a
+    java.lang.String SILENT_SUFFIX -> b
+    java.lang.Thread$UncaughtExceptionHandler mDfltExceptionHandler -> f
+    org.acra.ErrorReporter mInstanceSingleton -> g
+    android.content.Context mContext -> h
+    java.lang.String mInitialConfiguration -> i
+    org.acra.ReportingInteractionMode mReportingInteractionMode -> j
+    245:256:void approvePendingReports() -> a
+    266:267:void addCustomData(java.lang.String,java.lang.String) -> addCustomData
+    324:331:java.lang.String createCustomInfoString() -> i
+    340:343:org.acra.ErrorReporter getInstance() -> b
+    357:365:void init(android.content.Context) -> a
+    374:378:long getAvailableInternalMemorySize() -> j
+    388:392:long getTotalInternalMemorySize() -> k
+    403:583:void retrieveCrashData(android.content.Context) -> b
+    594:605:java.lang.String toString(android.view.Display) -> a
+    614:667:void uncaughtException(java.lang.Thread,java.lang.Throwable) -> uncaughtException
+    681:761:org.acra.ErrorReporter$ReportsSenderWorker handleException(java.lang.Throwable,org.acra.ReportingInteractionMode) -> a
+    773:773:org.acra.ErrorReporter$ReportsSenderWorker handleException(java.lang.Throwable) -> a
+    807:833:void notifySendReport(java.lang.String) -> a
+    847:863:void sendCrashReport(android.content.Context,org.acra.CrashReportData) -> a
+    878:899:java.lang.String saveCrashReportFile(java.lang.String,org.acra.CrashReportData) -> a
+    908:928:java.lang.String[] getCrashReportFilesList() -> c
+    942:977:void checkAndSendReports(android.content.Context,boolean) -> a
+    980:988:org.acra.CrashReportData loadCrashReport(android.content.Context,java.lang.String) -> a
+    992:996:void deleteFile(android.content.Context,java.lang.String) -> b
+    1005:1006:void setReportingInteractionMode(org.acra.ReportingInteractionMode) -> a
+    1012:1046:void checkReportsOnApplicationStart() -> d
+    1057:1066:java.lang.String getLatestNonSilentReport(java.lang.String[]) -> a
+    1074:1075:void deletePendingReports() -> e
+    1090:1092:void deletePendingNonApprovedReports() -> f
+    1104:1117:void deletePendingReports(boolean,boolean,int) -> a
+    1123:1132:void disable() -> g
+    1142:1147:boolean containsOnlySilentOrApprovedReports(java.lang.String[]) -> b
+    1157:1157:boolean isSilent(java.lang.String) -> b
+    1173:1173:boolean isApproved(java.lang.String) -> c
+    1192:1215:void addUserDataToReport(android.content.Context,java.lang.String,java.lang.String,java.lang.String) -> b
+    1224:1225:void addReportSender(org.acra.sender.ReportSender) -> a
+    1277:1278:void setAppStartDate(android.text.format.Time) -> a
+    88:88:android.content.Context access$000() -> h
+    88:88:void access$100(android.content.Context,java.lang.String,java.lang.String,java.lang.String) -> a
+org.acra.ErrorReporter$1 -> org.acra.m:
+    org.acra.ErrorReporter this$0 -> a
+    714:717:void run() -> run
+org.acra.ErrorReporter$2 -> org.acra.n:
+    org.acra.ErrorReporter this$0 -> a
+    920:920:boolean accept(java.io.File,java.lang.String) -> accept
+org.acra.ErrorReporter$ReportsSenderWorker -> org.acra.o:
+    java.lang.String mCommentedReportFileName -> b
+    java.lang.String mUserComment -> c
+    java.lang.String mUserEmail -> d
+    boolean mSendOnlySilentReports -> e
+    boolean mApprovePendingReports -> f
+    org.acra.ErrorReporter this$0 -> a
+    135:148:void run() -> run
+    154:163:android.os.PowerManager$WakeLock acquireWakeLock() -> b
+    175:177:void setUserComment(java.lang.String,java.lang.String) -> a
+    188:190:void setUserEmail(java.lang.String,java.lang.String) -> b
+    196:197:void setApprovePendingReports() -> a
+org.acra.LogCatCollector -> org.acra.p:
+    59:97:java.lang.String collectLogCat(java.lang.String) -> a
+org.acra.ReflectionCollector -> org.acra.q:
+    39:54:java.lang.String collectConstants(java.lang.Class) -> a
+    63:82:java.lang.String collectStaticGettersResults(java.lang.Class) -> b
+org.acra.ReportField -> org.acra.r:
+    org.acra.ReportField REPORT_ID -> a
+    org.acra.ReportField APP_VERSION_CODE -> b
+    org.acra.ReportField APP_VERSION_NAME -> c
+    org.acra.ReportField PACKAGE_NAME -> d
+    org.acra.ReportField FILE_PATH -> e
+    org.acra.ReportField PHONE_MODEL -> f
+    org.acra.ReportField ANDROID_VERSION -> g
+    org.acra.ReportField BUILD -> h
+    org.acra.ReportField BRAND -> i
+    org.acra.ReportField PRODUCT -> j
+    org.acra.ReportField TOTAL_MEM_SIZE -> k
+    org.acra.ReportField AVAILABLE_MEM_SIZE -> l
+    org.acra.ReportField CUSTOM_DATA -> m
+    org.acra.ReportField STACK_TRACE -> n
+    org.acra.ReportField INITIAL_CONFIGURATION -> o
+    org.acra.ReportField CRASH_CONFIGURATION -> p
+    org.acra.ReportField DISPLAY -> q
+    org.acra.ReportField USER_COMMENT -> r
+    org.acra.ReportField USER_APP_START_DATE -> s
+    org.acra.ReportField USER_CRASH_DATE -> t
+    org.acra.ReportField DUMPSYS_MEMINFO -> u
+    org.acra.ReportField DROPBOX -> v
+    org.acra.ReportField LOGCAT -> w
+    org.acra.ReportField EVENTSLOG -> x
+    org.acra.ReportField RADIOLOG -> y
+    org.acra.ReportField IS_SILENT -> z
+    org.acra.ReportField DEVICE_ID -> A
+    org.acra.ReportField INSTALLATION_ID -> B
+    org.acra.ReportField USER_EMAIL -> C
+    org.acra.ReportField DEVICE_FEATURES -> D
+    org.acra.ReportField ENVIRONMENT -> E
+    org.acra.ReportField SETTINGS_SYSTEM -> F
+    org.acra.ReportField SETTINGS_SECURE -> G
+    org.acra.ReportField SHARED_PREFERENCES -> H
+    org.acra.ReportField[] $VALUES -> I
+    26:26:org.acra.ReportField[] values() -> values
+    26:26:org.acra.ReportField valueOf(java.lang.String) -> valueOf
+org.acra.ReportingInteractionMode -> org.acra.ReportingInteractionMode:
+    org.acra.ReportingInteractionMode SILENT -> SILENT
+    org.acra.ReportingInteractionMode NOTIFICATION -> NOTIFICATION
+    org.acra.ReportingInteractionMode TOAST -> TOAST
+    org.acra.ReportingInteractionMode[] $VALUES -> $VALUES
+    30:30:org.acra.ReportingInteractionMode[] values() -> values
+    30:30:org.acra.ReportingInteractionMode valueOf(java.lang.String) -> valueOf
+org.acra.SettingsCollector -> org.acra.s:
+    45:65:java.lang.String collectSystemSettings(android.content.Context) -> a
+    78:95:java.lang.String collectSecureSettings(android.content.Context) -> b
+    99:103:boolean isAuthorized(java.lang.reflect.Field) -> a
+org.acra.SharedPreferencesCollector -> org.acra.t:
+    13:42:java.lang.String collect(android.content.Context) -> a
+org.acra.annotation.ReportsCrashes -> org.acra.a.a:
+    java.lang.String formKey() -> a
+    java.lang.String formUri() -> b
+    org.acra.ReportingInteractionMode mode() -> c
+    int resDialogCommentPrompt() -> d
+    int resDialogEmailPrompt() -> e
+    int resDialogIcon() -> f
+    int resDialogOkToast() -> g
+    int resDialogText() -> h
+    int resDialogTitle() -> i
+    int resNotifIcon() -> j
+    int resNotifText() -> k
+    int resNotifTickerText() -> l
+    int resNotifTitle() -> m
+    int resToastText() -> n
+    java.lang.String sharedPreferencesName() -> o
+    int sharedPreferencesMode() -> p
+    boolean includeDropBoxSystemTags() -> q
+    java.lang.String[] additionalDropBoxTags() -> r
+    int dropboxCollectionMinutes() -> s
+    java.lang.String[] logcatArguments() -> t
+    java.lang.String formUriBasicAuthLogin() -> u
+    java.lang.String formUriBasicAuthPassword() -> v
+    org.acra.ReportField[] customReportContent() -> w
+    java.lang.String mailTo() -> x
+    boolean deleteUnapprovedReportsOnApplicationStart() -> y
+    int socketTimeout() -> z
+    boolean forceCloseDialogAfterToast() -> A
+    java.lang.String[] additionalSharedPreferences() -> B
+org.acra.sender.EmailIntentSender -> org.acra.b.a:
+    android.content.Context mContext -> a
+    41:51:void send(org.acra.CrashReportData) -> a
+    54:64:java.lang.String buildBody(org.acra.CrashReportData) -> b
+org.acra.sender.GoogleFormSender -> org.acra.b.b:
+    android.net.Uri mFormUri -> a
+    52:67:void send(org.acra.CrashReportData) -> a
+    70:91:java.util.Map remap(java.util.Map) -> a
+org.acra.sender.GoogleFormSender$1 -> org.acra.b.c:
+    int[] $SwitchMap$org$acra$ReportField -> a
+org.acra.sender.HttpPostSender -> org.acra.b.d:
+    android.net.Uri mFormUri -> a
+    java.util.Map mMapping -> b
+    100:109:void send(org.acra.CrashReportData) -> a
+    112:124:java.util.Map remap(java.util.Map) -> a
+org.acra.sender.ReportSender -> org.acra.b.e:
+    void send(org.acra.CrashReportData) -> a
+org.acra.sender.ReportSenderException -> org.acra.b.f:
+org.acra.util.BoundedLinkedList -> org.acra.c.a:
+    int maxSize -> a
+    46:49:boolean add(java.lang.Object) -> add
+    59:63:void add(int,java.lang.Object) -> add
+    72:77:boolean addAll(java.util.Collection) -> addAll
+    93:93:boolean addAll(int,java.util.Collection) -> addAll
+    104:104:void addFirst(java.lang.Object) -> addFirst
+    114:115:void addLast(java.lang.Object) -> addLast
+    124:130:java.lang.String toString() -> toString
+org.acra.util.FakeSocketFactory -> org.acra.c.b:
+    javax.net.ssl.SSLContext sslcontext -> a
+    28:32:javax.net.ssl.SSLContext createEasySSLContext() -> a
+    37:40:javax.net.ssl.SSLContext getSSLContext() -> b
+    46:63:java.net.Socket connectSocket(java.net.Socket,java.lang.String,int,java.net.InetAddress,int,org.apache.http.params.HttpParams) -> connectSocket
+    68:68:java.net.Socket createSocket() -> createSocket
+    73:73:boolean isSecure(java.net.Socket) -> isSecure
+    79:79:java.net.Socket createSocket(java.net.Socket,java.lang.String,int,boolean) -> createSocket
+org.acra.util.HttpRequest -> org.acra.c.c:
+    org.apache.http.impl.client.DefaultHttpClient httpClient -> a
+    org.apache.http.protocol.HttpContext localContext -> b
+    org.apache.http.client.methods.HttpPost httpPost -> c
+    org.apache.http.client.methods.HttpGet httpGet -> d
+    org.apache.http.auth.UsernamePasswordCredentials creds -> e
+    80:80:java.lang.String sendPost(java.lang.String,java.lang.String) -> a
+    85:127:java.lang.String sendPost(java.lang.String,java.lang.String,java.lang.String) -> a
+org.acra.util.HttpUtils -> org.acra.c.d:
+    43:60:void doPost(java.util.Map,java.net.URL,java.lang.String,java.lang.String) -> a
+    63:63:boolean isNull(java.lang.String) -> a
+org.acra.util.Installation -> org.acra.c.e:
+    java.lang.String sID -> a
+    31:41:java.lang.String id(android.content.Context) -> a
+    45:52:java.lang.String readInstallationFile(java.io.File) -> a
+    56:63:void writeInstallationFile(java.io.File) -> b
+org.acra.util.NaiveTrustManager -> org.acra.c.f:
+    34:34:java.security.cert.X509Certificate[] getAcceptedIssuers() -> getAcceptedIssuers
+    47:47:void checkClientTrusted(java.security.cert.X509Certificate[],java.lang.String) -> checkClientTrusted
+    59:59:void checkServerTrusted(java.security.cert.X509Certificate[],java.lang.String) -> checkServerTrusted
